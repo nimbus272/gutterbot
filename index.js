@@ -2,9 +2,16 @@ require('dotenv').config(); //initialize dotenv
 const Discord = require('discord.js'); //import discord.js
 const { joinVoiceChannel, getVoiceConnection } = require('@discordjs/voice');
 const ytdl = require('ytdl-core');
+const search = require('youtube-search');
+
+
+const opts = {
+    maxResults: 1,
+    key: process.env.YT_API_KEY
+}
 
 const client = new Discord.Client({
-    intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES"]
+    intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"]
 }); //create new client
 
 const queue = new Map();
@@ -25,11 +32,11 @@ client.on('messageCreate', message => {
 
     const serverQueue = queue.get(message.guild.id);
 
-    if (message.content.toLowerCase.startsWith(`${process.env.PREFIX}play`)) {
+    if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}play`)) {
         execute(message, serverQueue)
-    } else if (message.content.toLowerCase.startsWith(`${process.env.PREFIX}skip`)) {
+    } else if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}skip`)) {
         skip(message, serverQueue)
-    } else if (message.content.toLowerCase.startsWith(`${process.env.PREFIX}stop`)) {
+    } else if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}stop`)) {
         stop(message, serverQueue)
     } else {
         message.reply('bro you suck');
@@ -39,45 +46,61 @@ client.on('messageCreate', message => {
 async function execute(message, serverQueue) {
     const args = message.content.split(' ');
     args.shift();
-    const request = args.join();
+    const request = args.join(" ");
 
     const voiceChannel = message.member.voice.channel;
-    if (!voiceChannel) {
-        return message.reply('In what channel ::PATHETIC::');
+    if (null === voiceChannel ) {
+        return message.reply('In what channel? ::PATHETIC::');
     }
-    const songInfo = await ytdl.getInfo(request);
-    const song = {
-        title: songInfo.videoDetails.title,
-        url: songInfo.videoDetails.video_url
-    };
+    let songInfo = await search(request, opts).then((response) => {
+        return response.results[0];
+    }).catch((err) => {
+        console.log(err);
+        return;
+    });
 
-    if (!serverQueue) {
-        const queueContract = {
-            textChannel: message.channel,
-            voiceChannel: voiceChannel,
-            connection: null,
-            songs: [],
-            volume: 5,
-            playing: true
-        };
+    message.reply(`Can't play ${songInfo.title} just yet, we're getting there. In the meantime, here's the link!`);
+    message.channel.send(songInfo.link);
+    //console.log(info);
 
-        queue.set(message.guild.id, queueContract);
-        queueContract.songs.push(song);
+    //console.log(songInfo);
 
-        try {
-            let connection = await voiceChannel.join();
-            queueContract.connection = connection;
-            play(message.guild, queueContract.songs[0]);
-        } catch (err) {
-            console.log(err);
-            queue.delete(message.guild.id);
-            return message.reply(`it broke lol`);
-        }
-    } else {
-        serverQueue.songs.push(song);
-        console.log(serverQueue.songs);
-        return message.reply(`${song.title} has been added to the queue!`);
-    }
+    // const songInfo = await ytdl.getInfo(request);
+    // const song = {
+    //     title: songInfo.videoDetails.title,
+    //     url: songInfo.videoDetails.video_url
+    // };
+
+    // console.log(song.title);
+    // console.log(song.url);
+
+    // if (!serverQueue) {
+    //     const queueContract = {
+    //         textChannel: message.channel,
+    //         voiceChannel: voiceChannel,
+    //         connection: null,
+    //         songs: [],
+    //         volume: 5,
+    //         playing: true
+    //     };
+
+    //     queue.set(message.guild.id, queueContract);
+    //     queueContract.songs.push(song);
+
+    //     try {
+    //         let connection = await voiceChannel.join();
+    //         queueContract.connection = connection;
+    //         play(message.guild, queueContract.songs[0]);
+    //     } catch (err) {
+    //         console.log(err);
+    //         queue.delete(message.guild.id);
+    //         return message.reply(`it broke lol`);
+    //     }
+    // } else {
+    //     serverQueue.songs.push(song);
+    //     console.log(serverQueue.songs);
+    //     return message.reply(`${song.title} has been added to the queue!`);
+    // }
 }
 
 function play(guild, song) {
