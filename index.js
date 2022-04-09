@@ -1,23 +1,25 @@
 require('dotenv').config(); //initialize dotenv
 const Discord = require('discord.js'); //import discord.js
 const { joinVoiceChannel, getVoiceConnection } = require('@discordjs/voice');
-const ytdl = require('ytdl-core');
-const search = require('youtube-search');
+const ytStream = require('yt-stream');
+const ffmpeg = require('ffmpeg');
+const fs = require('fs');
+const logger = require('winston');
 
-
-const opts = {
-    maxResults: 1,
-    key: process.env.YT_API_KEY
-}
+logger.remove(logger.transports.Console);
+logger.add(new logger.transports.Console, {
+    colorize: true
+});
+logger.level = 'debug';
 
 const client = new Discord.Client({
     intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"]
-}); //create new client
+});
 
-const queue = new Map();
+const queue = [];
 
 client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+  logger.info(`Logged in as ${client.user.tag}!`);
 });
 
 client.on('messageCreate', message => {
@@ -28,23 +30,77 @@ client.on('messageCreate', message => {
 
     if (!message.content.startsWith(process.env.PREFIX)) {
         return;
-    }
-
-    const serverQueue = queue.get(message.guild.id);
+    }  
 
     if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}play`)) {
-        execute(message, serverQueue)
-    } else if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}skip`)) {
-        skip(message, serverQueue)
-    } else if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}stop`)) {
-        stop(message, serverQueue)
-    } else {
-        message.reply('bro you suck');
+        //get search from arguments
+        let args = message.content.split(' ');
+        args.shift();
+        const request = args.join(" ");
+        ytStream.search(request).then((results) => {
+            queue.push(results[0].url);
+            
+            getMp3();
+        });
+        
+
+        
+        //message.reply(queue[0]);
+        //join voice channel of user if in channel
+        //let connection = joinChannel(message);
+        
+        //logger.info(request);
+
+        //if audio is not currently playing
+
+            //search youtube and push to the queue
+
+            //play music while queue is not empty
+
+                //play function will shift url when finished and loop over elements
+        //else
+
+            //search youtube and push to the queue
+
+        //connection.destroy();
+     } else {
+        logger.info('bro you suck');
     }
 });
 
-async function execute(message, serverQueue) {
-    const args = message.content.split(' ');
+async function getMp3() {
+    const stream = await ytStream.stream(queue[0], {
+        quality: 'high',
+        type: 'audio',
+        highWaterMark: 1048576 * 32
+    });
+    try {
+        stream.stream.pipe(fs.createWriteStream('temp.mp3'));
+    } catch (err) {
+        logger.info(err);
+    }
+
+    logger.info('done getting mp3')
+    
+    
+
+}
+
+const joinChannel = (message) => {
+    const voiceChannel = message.member.voice.channel;
+    if (null === voiceChannel ) {
+        return message.reply('In what channel? ::PATHETIC::');
+    }
+
+    return joinVoiceChannel({
+        channelId: voiceChannel.id,
+        guildId: voiceChannel.guild.id,
+        adapterCreator: voiceChannel.guild.voiceAdapterCreator
+    });
+}
+
+async function playYtSong(message) {
+    let args = message.content.split(' ');
     args.shift();
     const request = args.join(" ");
 
@@ -52,74 +108,26 @@ async function execute(message, serverQueue) {
     if (null === voiceChannel ) {
         return message.reply('In what channel? ::PATHETIC::');
     }
-    let songInfo = await search(request, opts).then((response) => {
-        return response.results[0];
-    }).catch((err) => {
-        console.log(err);
-        return;
+    
+    const connection = joinVoiceChannel({
+        channelId: voiceChannel.id,
+        guildId: voiceChannel.guild.id,
+        adapterCreator: voiceChannel.guild.voiceAdapterCreator
     });
 
-    message.reply(`Can't play ${songInfo.title} just yet, we're getting there. In the meantime, here's the link!`);
-    message.channel.send(songInfo.link);
-    //console.log(info);
+    (async () => {
+        let results = await ytStream.search(request);
+        queue.push(results[0].url);
+        logger.info(results);
+    })();
 
-    //console.log(songInfo);
 
-    // const songInfo = await ytdl.getInfo(request);
-    // const song = {
-    //     title: songInfo.videoDetails.title,
-    //     url: songInfo.videoDetails.video_url
-    // };
+    
+    
 
-    // console.log(song.title);
-    // console.log(song.url);
 
-    // if (!serverQueue) {
-    //     const queueContract = {
-    //         textChannel: message.channel,
-    //         voiceChannel: voiceChannel,
-    //         connection: null,
-    //         songs: [],
-    //         volume: 5,
-    //         playing: true
-    //     };
+    message.reply(`Can't play just yet, we're getting there. In the meantime, here's the link!`);
 
-    //     queue.set(message.guild.id, queueContract);
-    //     queueContract.songs.push(song);
-
-    //     try {
-    //         let connection = await voiceChannel.join();
-    //         queueContract.connection = connection;
-    //         play(message.guild, queueContract.songs[0]);
-    //     } catch (err) {
-    //         console.log(err);
-    //         queue.delete(message.guild.id);
-    //         return message.reply(`it broke lol`);
-    //     }
-    // } else {
-    //     serverQueue.songs.push(song);
-    //     console.log(serverQueue.songs);
-    //     return message.reply(`${song.title} has been added to the queue!`);
-    // }
+    connection.destroy();
 }
-
-function play(guild, song) {
-    const serverQueue = queue.get(guild.id);
-    if (!song) {
-        serverQueue.voiceChannel.leave()
-        queue.delete(guild.id);
-        return;
-    }
-
-    const dispatcher = serverQueue.connection.play(ytdl(song.url)).on("finish", () => {
-        serverQueue.songs.shift();
-        play(guild, serverQueue.songs[0]);
-    }).on("error", console.error(error));
-    dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-    serverQueue.textChannel.send(`Start playing: **${song.title}**`);
-}
-
-
-//make sure this line is the last line
-
-client.login(process.env.CLIENT_TOKEN); //login bot using token
+client.login(process.env.CLIENT_TOKEN);
