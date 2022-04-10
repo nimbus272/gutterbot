@@ -43,12 +43,7 @@ client.on("messageCreate", async (message) => {
   if (!message.content.startsWith(process.env.PREFIX)) {
     return;
   }
-  if (message.author.username.toLowerCase() === "ratcarl") {
-    if (message.content.startsWith(process.env.PREFIX)) {
-      message.reply("bad rat!");
-      return;
-    }
-  }
+  
   if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}play`)) {
     //get search from arguments
     let args = message.content.split(" ");
@@ -67,7 +62,7 @@ client.on("messageCreate", async (message) => {
       //play song
       playStream();
     }
-    message.reply(`Down with Riley! ${results[0].url}`);
+    message.reply(results[0].url);
   } else if (
     message.content.toLowerCase().startsWith(`${process.env.PREFIX}skip`)
   ) {
