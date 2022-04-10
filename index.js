@@ -1,18 +1,23 @@
 require("dotenv").config(); //initialize dotenv
 const Discord = require("discord.js"); //import discord.js
+const play = require("play-dl");
+const ytStream = require("yt-stream");
 const {
+  AudioPlayerStatus,
+  NoSubscriberBehavior,
   createAudioPlayer,
   joinVoiceChannel,
   getVoiceConnection,
   createAudioResource,
 } = require("@discordjs/voice");
 
-const ytStream = require("yt-stream");
-const ffmpeg = require("ffmpeg");
-const fs = require("fs");
 const logger = require("winston");
 
-const player = createAudioPlayer();
+const player = createAudioPlayer({
+  behaviors: {
+    noSubscriber: NoSubscriberBehavior.Play,
+  },
+});
 
 logger.remove(logger.transports.Console);
 logger.add(new logger.transports.Console(), {
@@ -24,13 +29,13 @@ const client = new Discord.Client({
   intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"],
 });
 
-const queue = [];
-
+let queue = [];
+let connection = {};
 client.on("ready", () => {
   logger.info(`Logged in as ${client.user.tag}!`);
 });
 
-client.on("messageCreate", (message) => {
+client.on("messageCreate", async (message) => {
   if (message.author.bot) {
     return;
   }
@@ -38,61 +43,79 @@ client.on("messageCreate", (message) => {
   if (!message.content.startsWith(process.env.PREFIX)) {
     return;
   }
-
+  if (message.author.username.toLowerCase() === "ratcarl") {
+    if (message.content.startsWith(process.env.PREFIX)) {
+      message.reply("bad rat!");
+      return;
+    }
+  }
   if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}play`)) {
     //get search from arguments
     let args = message.content.split(" ");
     args.shift();
     const request = args.join(" ");
-    let connection = joinChannel(message);
-    ytStream.search(request).then((results) => {
-      queue.push(results[0].url);
-
-      getMp3(connection);
-    });
-
-    //message.reply(queue[0]);
     //join voice channel of user if in channel
-
-    //logger.info(request);
-
+    connection = joinChannel(message);
+    logger.info(`Searching youtube for ${request}`);
+    let results = await ytStream.search(request);
+    queue.push(results[0].url);
+    logger.info(
+      `Player State ${player._state.status} Status ${AudioPlayerStatus.Idle}`
+    );
     //if audio is not currently playing
-
-    //search youtube and push to the queue
-
-    //play music while queue is not empty
-
-    //play function will shift url when finished and loop over elements
-    //else
-
-    //search youtube and push to the queue
+    if (player._state.status === AudioPlayerStatus.Idle) {
+      //play song
+      playStream();
+    }
+    message.reply(`Down with Riley! ${results[0].url}`);
+  } else if (
+    message.content.toLowerCase().startsWith(`${process.env.PREFIX}skip`)
+  ) {
+    if (!player._state.status === AudioPlayerStatus.Playing) {
+      message.reply("Nah...");
+      return;
+    }
+    player.stop();
+  } else if (
+    message.content.toLowerCase().startsWith(`${process.env.PREFIX}stop`)
+  ) {
+    if (!player._state.status === AudioPlayerStatus.Playing) {
+      message.reply("Nah...");
+      return;
+    }
+    queue = [];
+    player.stop();
   } else {
-    logger.info("bro you suck");
+    message.reply("bro you suck ::PATHETIC::");
   }
 });
 
-async function getMp3(connection) {
-  ytStream
-    .stream(queue[0], {
-      quality: "high",
-      type: "audio",
-      highWaterMark: 1048576 * 32,
-    })
-    .then((stream) => {
-      try {
-        stream.stream.pipe(fs.createWriteStream("temp.mp3")).on("finish", () => {
-        logger.info("done getting mp3");
-        const resource = createAudioResource("./temp.mp3");
-        connection.subscribe(player);
-        player.play(resource);
-        });
-        
-      } catch (err) {
-        logger.info(err);
-      }
-      
+async function playStream() {
+  if (queue.length === 0) {
+    return;
+  }
+  try {
+    let stream = await play.stream(queue[0]);
+    let resource = createAudioResource(stream.stream, {
+      inputType: stream.type,
     });
+    console.log(player._state);
+    player.play(resource);
+    connection.subscribe(player);
+    queue.shift();
+  } catch (err) {
+    logger.info(err);
+  }
 }
+player.on("idle", () => {
+  if (queue.length > 0) {
+    playStream();
+  } else {
+    setTimeout(() => {
+      connection.destroy();
+    }, 120000);
+  }
+});
 
 const joinChannel = (message) => {
   const voiceChannel = message.member.voice.channel;
@@ -107,32 +130,4 @@ const joinChannel = (message) => {
   });
 };
 
-async function playYtSong(message) {
-  let args = message.content.split(" ");
-  args.shift();
-  const request = args.join(" ");
-
-  const voiceChannel = message.member.voice.channel;
-  if (null === voiceChannel) {
-    return message.reply("In what channel? ::PATHETIC::");
-  }
-
-  const connection = joinVoiceChannel({
-    channelId: voiceChannel.id,
-    guildId: voiceChannel.guild.id,
-    adapterCreator: voiceChannel.guild.voiceAdapterCreator,
-  });
-
-  (async () => {
-    let results = await ytStream.search(request);
-    queue.push(results[0].url);
-    logger.info(results);
-  })();
-
-  message.reply(
-    `Can't play just yet, we're getting there. In the meantime, here's the link!`
-  );
-
-  connection.destroy();
-}
 client.login(process.env.CLIENT_TOKEN);
