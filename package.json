@@ -1,6 +1,9 @@
 {
   "name": "gutterbot",
   "version": "1.0.0",
+  "bin": {
+    "gutterbot": "./index.js"
+  },
   "description": "unga",
   "main": "index.js",
   "scripts": {
