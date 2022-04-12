@@ -1,4 +1,4 @@
-require("dotenv").config(); //initialize dotenv
+require("dotenv").config({path:__dirname + '/.env'}); //initialize dotenv
 const Discord = require("discord.js"); //import discord.js
 const play = require("play-dl");
 const ytStream = require("yt-stream");
