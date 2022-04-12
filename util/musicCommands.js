@@ -28,38 +28,42 @@ const handleKill = async (message) => {
   } else {
     return message.reply("you don't have the right");
   }
-}
+};
 
 const handleStop = async (message) => {
   let guildId = message.guildId;
   let currentQueueObject = message.client.queueObject.get(guildId);
-
+  if (!currentQueueObject) {
+    return message.reply("Why don't you ask me later...");
+  }
   if (
     currentQueueObject.audioPlayer._state.status !== AudioPlayerStatus.Playing
   ) {
-    message.reply("Nah...");
+    message.reply("I don't really feel like it...");
     return;
   }
   logger.info(`Stopping...`);
   currentQueueObject.audioPlayer.stop();
   currentQueueObject.songQueue = [];
-}
+};
 
 const handleSkip = async (message) => {
   let guildId = message.guildId;
   let currentQueueObject = message.client.queueObject.get(guildId);
-
+  if (!currentQueueObject) {
+    return message.reply("I don't really feel like it...");
+  }
   if (
     currentQueueObject.audioPlayer._state.status !== AudioPlayerStatus.Playing
   ) {
-    message.reply("Nah...");
+    message.reply("I don't really feel like it...");
     return;
   }
   logger.info(`Skipping...`);
   currentQueueObject.audioPlayer.stop();
-}
+};
 
-const handlePlay = async(message) => {
+const handlePlay = async (message) => {
   let guildId = message.guildId;
   let currentQueueObject = message.client.queueObject.get(guildId);
   const voiceChannel = message.member.voice.channel;
@@ -131,9 +135,9 @@ const handlePlay = async(message) => {
   message.reply(
     `beep boop ${results[0].url} has been added to the queue :bee:`
   );
-}
+};
 
-const playStream = async(currentQueueObject) => {
+const playStream = async (currentQueueObject) => {
   if (currentQueueObject.songQueue.length === 0) {
     return;
   }
@@ -149,7 +153,7 @@ const playStream = async(currentQueueObject) => {
   } catch (err) {
     logger.error(`${err.toString()}`);
   }
-}
+};
 
 const joinChannel = async (message, voiceChannel) => {
   if (null === voiceChannel) {
@@ -164,6 +168,6 @@ const joinChannel = async (message, voiceChannel) => {
   } catch (joinChannelErr) {
     logger.error(`${joinChannelErr.toString()}`);
   }
-}
+};
 
 module.exports = { handlePlay, handleSkip, handleStop, handleKill };
