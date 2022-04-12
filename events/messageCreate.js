@@ -54,16 +54,22 @@ module.exports = {
             audioPlayer: player,
             songQueue: [],
           };
+          let timeout;
+          queueObject.songQueue.push(results[0].url);
           queueObject.audioPlayer.addListener(AudioPlayerStatus.Idle, () => {
             if (message.client.queue.get(guildId).songQueue.length > 0) {
               playStream(message);
             } else {
-              setTimeout(() => {
+              timeout = setTimeout(() => {
                 message.client.queue.get(message.guildId).connection.destroy();
               }, 120000);
             }
+          });
+          queueObject.audioPlayer.addListener(AudioPlayerStatus.Playing, () => {
+            if (timeout) {
+              clearTimeout(timeout);
+            }
           })
-          queueObject.songQueue.push(results[0].url);
           message.client.queue.set(guildId, queueObject);
         }
         //queue.push(results[0].url);
