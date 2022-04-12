@@ -1,4 +1,4 @@
-require("dotenv").config(); //initialize dotenv
+require("dotenv").config({path:__dirname + '/.env'}); //initialize dotenv
 const Discord = require("discord.js"); //import discord.js
 const play = require("play-dl");
 const ytStream = require("yt-stream");
@@ -43,12 +43,14 @@ client.on("messageCreate", async (message) => {
   if (!message.content.startsWith(process.env.PREFIX)) {
     return;
   }
+
   if (message.author.username.toLowerCase() === "ratcarl") {
     if (message.content.startsWith(process.env.PREFIX)) {
       message.reply("bad rat!");
       return;
     }
   }
+
   if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}play`)) {
     //get search from arguments
     let args = message.content.split(" ");

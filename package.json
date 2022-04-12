@@ -26,5 +26,11 @@
     "winston": "^3.7.2",
     "yt-stream": "^1.1.1",
     "ytdl-core": "^4.11.0"
-  }
+  },
+  "pkg": {
+    "targets" : ["node16-win-x64"],
+    "outputPath": "dist",
+    "assets": ".env"
+  },
+  "private": true
 }
