@@ -13,7 +13,7 @@ const client = new Discord.Client({
   intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"],
 });
 
-client.queue = new Map();
+client.queueObject = new Map();
 
 const eventFiles = fs.readdirSync(`${__dirname}/events`).filter(file => file.endsWith('.js'));
 
