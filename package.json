@@ -24,7 +24,8 @@
   },
   "pkg": {
     "targets": [
-      "node16-win-x64"
+      "node16-win-x64",
+      "node16-linux-arm64"
     ],
     "outputPath": "dist",
     "assets": [
