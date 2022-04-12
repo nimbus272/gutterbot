@@ -13,7 +13,6 @@ module.exports = {
     if (message.author.bot) {
       return;
     }
-    console.log(`message: ${message.content}`);
     if (message.content.startsWith("<@")) {
       await handleAt(message);
     }
