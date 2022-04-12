@@ -1,6 +1,6 @@
-require("dotenv").config({path:`${__dirname}/.env`}); //initialize dotenv
+require("dotenv").config({ path: `${__dirname}/.env` }); //initialize dotenv
 const Discord = require(`discord.js`); //import discord.js
-const fs = require('fs');
+const fs = require("fs");
 
 const logger = require("winston");
 logger.remove(logger.transports.Console);
@@ -15,7 +15,9 @@ const client = new Discord.Client({
 
 client.queueObject = new Map();
 
-const eventFiles = fs.readdirSync(`${__dirname}/events`).filter(file => file.endsWith('.js'));
+const eventFiles = fs
+  .readdirSync(`${__dirname}/events`)
+  .filter((file) => file.endsWith(".js"));
 
 for (const file of eventFiles) {
   const event = require(`${__dirname}/events/${file}`);

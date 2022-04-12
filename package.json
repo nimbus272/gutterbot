@@ -29,7 +29,8 @@
     "outputPath": "dist",
     "assets": [
       ".env",
-      "/events/*.js"
+      "/events/*.js",
+      "/util/*.js"
     ]
   },
   "private": true
