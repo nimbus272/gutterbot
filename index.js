@@ -1,5 +1,5 @@
 require("dotenv").config({path:`${__dirname}/.env`}); //initialize dotenv
-const Discord = require("discord.js"); //import discord.js
+const Discord = require(`discord.js`); //import discord.js
 const fs = require('fs');
 
 const logger = require("winston");
@@ -12,6 +12,9 @@ logger.level = "debug";
 const client = new Discord.Client({
   intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"],
 });
+
+client.queue = new Map();
+
 const eventFiles = fs.readdirSync(`${__dirname}/events`).filter(file => file.endsWith('.js'));
 
 for (const file of eventFiles) {
