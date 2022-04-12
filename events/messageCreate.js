@@ -1,5 +1,5 @@
 const play = require("play-dl");
-const ytSearch = require('yt-search');
+const ytStream = require('yt-stream');
 const {
     AudioPlayerStatus,
     createAudioPlayer,
@@ -29,19 +29,29 @@ module.exports = {
             args.shift();
             const request = args.join(" ");
             //join voice channel of user if in channel
-            connection = joinChannel(message);
-            logger.info(`Searching youtube for ${request}`);
-            let results = await ytSearch(request);
-            queue.push(results.videos[0].url);
-            logger.info(
-              `Player State ${player._state.status} Status ${AudioPlayerStatus.Idle}`
-            );
+            connection = await joinChannel(message);
+
+            if (message.member.voice.channel === null) {
+                return;
+            }
+            
+            let results;
+            try {
+                logger.info(`Searching youtube for ${request}`);
+                results = await ytStream.search(request);
+                queue.push(results[0].url);
+            } catch (ytSearchErr) {
+                logger.error(`${ytSearchErr.toString()}  Caught line 44 messageCreate.js`);
+                message.reply(`Search for ${request} failed.`);
+                return;
+            }
+            logger.info(`${results[0].title} has been added to the queue!`)
             //if audio is not currently playing
             if (player._state.status === AudioPlayerStatus.Idle) {
               //play song
               playStream();
             }
-            message.reply(results.videos[0].url);
+            message.reply(results[0].url);
           } else if (
             message.content.toLowerCase().startsWith(`${process.env.PREFIX}skip`)
           ) {
@@ -49,6 +59,7 @@ module.exports = {
               message.reply("Nah...");
               return;
             }
+            logger.info(`Skipping...`);
             player.stop();
           } else if (
             message.content.toLowerCase().startsWith(`${process.env.PREFIX}stop`)
@@ -58,9 +69,17 @@ module.exports = {
               return;
             }
             queue = [];
+            logger.info(`Stopping...`);
             player.stop();
+          } else if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}kill`)) {
+            await message.reply(`:b:EACE`);
+            if (player._state.status === AudioPlayerStatus.Playing) {
+                player.stop();
+                connection.destroy();
+            }
+            process.exit();
           } else {
-            message.reply("bro you suck ::PATHETIC::");
+            message.reply("bro you suck ::slugma::");
           }
     }
 }
@@ -74,12 +93,11 @@ async function playStream() {
       let resource = createAudioResource(stream.stream, {
         inputType: stream.type,
       });
-      console.log(player._state);
       player.play(resource);
       connection.subscribe(player);
       queue.shift();
     } catch (err) {
-      logger.info(err);
+      logger.error(`${err.toString()}  Caught line 100 at messageCreate.js`);
     }
 }
 
@@ -93,15 +111,18 @@ player.on("idle", () => {
     }
   });
 
-const joinChannel = (message) => {
+const joinChannel = async (message) => {
     const voiceChannel = message.member.voice.channel;
     if (null === voiceChannel) {
       return message.reply("In what channel? ::PATHETIC::");
     }
-  
-    return joinVoiceChannel({
-      channelId: voiceChannel.id,
-      guildId: voiceChannel.guild.id,
-      adapterCreator: voiceChannel.guild.voiceAdapterCreator,
-    });
+    try {
+        return joinVoiceChannel({
+            channelId: voiceChannel.id,
+            guildId: voiceChannel.guild.id,
+            adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+          });
+    } catch (joinChannelErr) {
+        logger.error(`${joinChannelErr.toString()}  Caught line 126 at messageCreate.js`);
+    }
 };
