@@ -69,7 +69,7 @@ module.exports = {
             if (timeout) {
               clearTimeout(timeout);
             }
-          })
+          });
           message.client.queue.set(guildId, queueObject);
         }
         //queue.push(results[0].url);
@@ -87,7 +87,7 @@ module.exports = {
         //play song
         playStream(message);
       }
-      message.reply(results[0].url);
+      message.reply(`beep boop ${results[0].url} has been added to the queue :bee:`);
     } else if (
       message.content.toLowerCase().startsWith(`${process.env.PREFIX}skip`)
     ) {
@@ -116,17 +116,24 @@ module.exports = {
     } else if (
       message.content.toLowerCase().startsWith(`${process.env.PREFIX}kill`)
     ) {
-      await message.reply(`:b:EACE`);
       if (
-        message.client.queue.get(guildId).audioPlayer._state.status ===
-        AudioPlayerStatus.Playing
+        message.author.username === "nimbus272" ||
+        message.author.username === "swill"
       ) {
-        message.client.queue.get(guildId).audioPlayer.stop();
-        message.client.queue.get(guildId).connection.destroy();
+        await message.reply(`:b:EACE`);
+        if (
+          message.client.queue.get(guildId).audioPlayer._state.status ===
+          AudioPlayerStatus.Playing
+        ) {
+          message.client.queue.get(guildId).audioPlayer.stop();
+          message.client.queue.get(guildId).connection.destroy();
+        }
+        process.exit();
+      } else {
+        return message.reply("you don't have the right");
       }
-      process.exit();
     } else {
-      message.reply("bro you suck ::slugma::");
+      return message.reply("bro you suck :slugma:");
     }
   },
 };
@@ -155,15 +162,15 @@ async function playStream(message) {
   }
 }
 
-function onIdle(message) {
-  if (queue.length > 0) {
-    playStream(message);
-  } else {
-    setTimeout(() => {
-      message.client.queue.get(message.guildId).connection.destroy();
-    }, 120000);
-  }
-}
+// function onIdle(message) {
+//   if (queue.length > 0) {
+//     playStream(message);
+//   } else {
+//     setTimeout(() => {
+//       message.client.queue.get(message.guildId).connection.destroy();
+//     }, 120000);
+//   }
+// }
 // player.on("idle", () => {
 //     if (queue.length > 0) {
 //       playStream();
@@ -177,7 +184,7 @@ function onIdle(message) {
 const joinChannel = async (message) => {
   const voiceChannel = message.member.voice.channel;
   if (null === voiceChannel) {
-    return message.reply("In what channel? ::PATHETIC::");
+    return message.reply("In what channel? :PATHETIC:");
   }
   try {
     return joinVoiceChannel({
