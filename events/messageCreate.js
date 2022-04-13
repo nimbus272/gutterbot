@@ -4,7 +4,12 @@ const {
   handleStop,
   handleKill,
 } = require(`${__dirname}/../util/musicCommands.js`);
-const { handleAt, handleHelp } = require(`${__dirname}/../util/funCommands.js`);
+const {
+  handleAt,
+  handleHelp,
+  trimAt,
+  activate,
+} = require(`${__dirname}/../util/funCommands.js`);
 
 module.exports = {
   name: "messageCreate",
@@ -12,10 +17,24 @@ module.exports = {
     if (message.author.bot) {
       return;
     }
-    if (message.content.includes("<@")) {
+    if (
+      message.content.startsWith(`${process.env.PREFIX}`) &&
+      message.content.includes("<@")
+    ) {
+      await handleAt(message);
+      await trimAt(message);
+    }
+    if (
+      message.content.includes("<@") &&
+      !message.content.startsWith(`${process.env.PREFIX}`)
+    ) {
       await handleAt(message);
     }
     if (!message.content.startsWith(process.env.PREFIX)) {
+      return;
+    }
+    if (message.content.startsWith(`${process.env.PREFIX}activate`)) {
+      await activate(message);
       return;
     }
     if (message.content.startsWith(`${process.env.PREFIX}help`)) {
