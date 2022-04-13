@@ -96,9 +96,8 @@ const handleHelp = async (message) => {
     message.content.toLowerCase().startsWith(`${process.env.PREFIX}help play`)
   ) {
     return message.reply(
-      `Bzzt - The !play command is used to add videos to the queue. You can either provide a URL or a search term. 
-      If you provide a search term, the first video in the search results will be added to the queue. 
-      Example: "!play never gonna give you up"`
+      `Bzzt - The !play command is used to add videos to the queue. You can either provide a URL or a search term. If you provide a search term, the first video in the search results will be added to the queue. 
+    Example: "!play never gonna give you up"`
     );
   }
   if (
@@ -106,8 +105,7 @@ const handleHelp = async (message) => {
   ) {
     return message.reply(
       `The !skip command is used to skip the currently playing video. If there is another video in the queue, it will play next.
-      Example: "!skip" 
-      beep boop`
+    Example: "!skip"`
     );
   }
   if (
@@ -115,15 +113,13 @@ const handleHelp = async (message) => {
   ) {
     return message.reply(
       `The !stop command is used to stop the currently playing video and empty the queue.
-      Example: "!stop"`
+    Example: "!stop"`
     );
   }
   if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}help`)) {
     return message.reply(
-      `I am a music bot by Dennis and Will. 
-      Possible commands are "!play", "!skip", and "!stop". 
-      Type "!help" followed by a command for more info about that command. 
-      Example: "!help play"`
+    `I am a music bot by Dennis and Will. Possible commands are "!play", "!skip", and "!stop". Type "!help" followed by a command for more info about that command.   
+    Example: "!help play"`
     );
   }
 };
