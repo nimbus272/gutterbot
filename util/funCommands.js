@@ -1,4 +1,5 @@
-const logger = require("winston");
+const path = require('path');
+const logger = require(path.join(__dirname, '..', 'logger'));
 const talk = require(`${__dirname}/../util/thingsForRobotsToSay.json`);
 
 async function reroll(speak) {
@@ -18,11 +19,13 @@ async function reroll_tongues(in_tongues) {
 }
 
 //  if (message.guildId === "747327258854948935")
+//gutterbot id = "<@961706313375703050>"
+//gutterbot-testing id = "<@963619581346344991>"
 
 const handleAt = async (message) => {
   let in_tongues = talk.huntin_phrases[Math.floor(Math.random() * talk.huntin_phrases.length)];
   let speak = talk.phrases[Math.floor(Math.random() * talk.phrases.length)];
-  if (message.content.includes("<@961706313375703050")) {
+  if (message.content.includes("<@963619581346344991>" || "<@961706313375703050>")) {
     if (message.guildId === "747327258854948935") {
       reroll_tongues(in_tongues);
       return message.reply(in_tongues);
@@ -37,7 +40,6 @@ const handleAt = async (message) => {
       message.client.user.id
     );
     if (botGuildObject.roles.cache.has(roleID)) {
-      logger.info(message.guildId)
       if (message.guildId === "747327258854948935") {
         reroll_tongues(in_tongues);
         return message.reply(in_tongues);

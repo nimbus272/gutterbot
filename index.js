@@ -1,13 +1,27 @@
 require("dotenv").config({ path: `${__dirname}/.env` }); //initialize dotenv
 const Discord = require(`discord.js`); //import discord.js
 const fs = require("fs");
+const { REPL_MODE_STRICT } = require("repl");
 
-const logger = require("winston");
-logger.remove(logger.transports.Console);
-logger.add(new logger.transports.Console(), {
-  colorize: true,
-});
-logger.level = "debug";
+
+// const winston = require("winston");
+
+// const logConfiguration = {
+//   transports: [
+//     new winston.transports.File({
+//       level: 'error',
+//       filename: 'logs/error-logs.log'
+//   }),
+//   ],
+//   format: winston.format.combine(
+//     winston.format.timestamp({
+//       format: 'MMM-DD-YYYY HH:mm:ss'
+//     }),
+//     winston.format.printf(info => `${info.level}: ${[info.timestamp]}: ${info.message}`)
+//   )
+// };
+// module.exports.logger = winston.createLogger(logConfiguration);
+
 
 const client = new Discord.Client({
   intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"],

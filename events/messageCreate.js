@@ -1,12 +1,9 @@
-const logger = require("winston");
-
 const {
   handlePlay,
   handleSkip,
   handleStop,
   handleKill,
 } = require(`${__dirname}/../util/musicCommands.js`);
-
 const { handleAt, handleHelp } = require(`${__dirname}/../util/funCommands.js`);
 
 module.exports = {
