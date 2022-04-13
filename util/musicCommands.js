@@ -42,6 +42,7 @@ const handleStop = async (message) => {
     message.reply("I don't really feel like it...");
     return;
   }
+  message.react("💯");
   logger.info(`Stopping...`);
   currentQueueObject.audioPlayer.stop();
   currentQueueObject.songQueue = [];
@@ -61,6 +62,7 @@ const handleSkip = async (message) => {
   }
   logger.info(`Skipping...`);
   currentQueueObject.audioPlayer.stop();
+  message.react("💯");
 };
 
 const handlePlay = async (message) => {
@@ -121,6 +123,9 @@ const handlePlay = async (message) => {
     //queue.push(results[0].url);
   } catch (ytSearchErr) {
     logger.error(`${ytSearchErr.toString()}`);
+    if (message.guildId === "747327258854948935") {
+      return message.reply(`${request} my balls <:slugma:852187551766806578>`);
+    }
     message.reply(`Search for ${request} failed.`);
     return;
   }
@@ -133,7 +138,7 @@ const handlePlay = async (message) => {
     playStream(currentQueueObject);
   }
   message.reply(
-    `beep boop ${results[0].url} has been added to the queue :bee:`
+    `beep boop ${results[0].url} has been added to the queue :robot:`
   );
 };
 
@@ -157,7 +162,11 @@ const playStream = async (currentQueueObject) => {
 
 const joinChannel = async (message, voiceChannel) => {
   if (null === voiceChannel) {
-    return message.reply("In what channel? :PATHETIC:");
+    if (message.guildId === "747327258854948935") {
+      message.reply("In what channel? <:PATHETIC:778014063023357953>");
+    } else {
+      return message.reply("In what channel? <:PATHETIC:963669463356563476>");
+    }
   }
   try {
     return joinVoiceChannel({

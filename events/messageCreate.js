@@ -1,3 +1,5 @@
+const  logger  = require("winston");
+
 const {
   handlePlay,
   handleSkip,
@@ -13,7 +15,7 @@ module.exports = {
     if (message.author.bot) {
       return;
     }
-    if (message.content.startsWith("<@")) {
+    if (message.content.includes("<@")) {
       await handleAt(message);
     }
     if (!message.content.startsWith(process.env.PREFIX)) {
@@ -35,7 +37,11 @@ module.exports = {
     ) {
       await handleKill(message);
     } else {
-      return message.reply("bro you suck :slugma:");
+      if (message.guildId === "747327258854948935") {
+        return message.reply("bro you suck <:slugma:852187551766806578>");
+      } else {
+      return message.reply("bro you suck <:slugma:963669188914864169>");
+    }
     }
   },
 };
