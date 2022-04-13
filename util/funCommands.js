@@ -1,10 +1,10 @@
 const path = require("path");
-const logger = require(path.join(__dirname, "..", "logger"));
+const {logger} = require(path.join(__dirname, "..", "logger"));
 const talk = require(`${__dirname}/../util/thingsForRobotsToSay.json`);
 
 async function reroll(speak) {
   if (speak === talk.phrases[7]) {
-    logger.info.info(
+    logger.info(
       "Rerolled anti-riley propaganda. If it gets through now, it was fate."
     );
     speak = talk.phrases[Math.floor(Math.random() * talk.phrases.length)];
@@ -19,7 +19,7 @@ async function activate(message) {
 
 async function reroll_tongues(in_tongues) {
   if (in_tongues === talk.huntin_phrases[7]) {
-    logger.info.info(
+    logger.info(
       "Rerolled anti-riley propaganda. If it gets through now, it was fate."
     );
     in_tongues =
@@ -37,7 +37,7 @@ async function reroll_tongues(in_tongues) {
 const trimAt = async (message) => {
   let at = message.content.split("<@")[1].split(">")[0];
   message.content = message.content.replace(`<@${at}>`, "");
-  logger.info.info("Successfully trimmed @ from search request.");
+  logger.info("Successfully trimmed @ from search request.");
   return message;
 };
 
@@ -51,17 +51,17 @@ const handleAt = async (message) => {
   ) {
     let at = message.content.split("<@")[1].split(">")[0];
     if (at === message.client.user.id) {
-      logger.info.info("Mention detected. Bweeeeep.");
+      logger.info("Mention detected. Bweeeeep.");
       if (message.guildId === "747327258854948935") {
-        logger.info.info(
+        logger.info(
           `We're in the hunting server with the boys. Hell yeah. Booop.`
         );
         reroll_tongues(in_tongues);
         return message.reply(in_tongues);
       } else {
         reroll(speak);
-        logger.info.info(
-          `Sending a funny quip to guild: ${message.guildId} beeeeep.`
+        logger.info(
+          `Sending a funny quip to guild: [${message.guild.name}] beeeeep.`
         );
         return message.reply(speak);
       }
@@ -75,15 +75,15 @@ const handleAt = async (message) => {
     );
     if (botGuildObject.roles.cache.has(roleID)) {
       if (message.guildId === "747327258854948935") {
-        logger.info.info(
+        logger.info(
           `We're in the hunting server with the boys. Hell yeah. Beep.`
         );
         reroll_tongues(in_tongues);
         return message.reply(in_tongues);
       } else {
         reroll(speak);
-        logger.info.info(
-          `Sending a funny quip to guild: ${message.guildId} Bweep.`
+        logger.info(
+          `Sending a funny quip to guild: [${message.guild.name}] Bweep.`
         );
         return message.reply(speak);
       }

@@ -8,7 +8,7 @@ const {
   joinVoiceChannel,
   createAudioResource,
 } = require("@discordjs/voice");
-const logger = require(path.join(__dirname, '..', 'logger'));
+const {logger} = require(path.join(__dirname, '..', 'logger'));
 
 const handleKill = async (message) => {
   let guildId = message.guildId;
@@ -44,7 +44,7 @@ const handleStop = async (message) => {
     return;
   }
   message.react("💯");
-  logger.info.info(`Stopping playback in channel: ${message.member.voice.channel.id} of server ${message.client.guildId}...`);
+  logger.info(`Stopping playback in channel: [${message.member.voice.channel.name}] of server [${message.guild.name}]...`);
   currentQueueObject.audioPlayer.stop();
   currentQueueObject.songQueue = [];
 };
@@ -61,7 +61,7 @@ const handleSkip = async (message) => {
     message.reply("I don't really feel like it...");
     return;
   }
-  logger.info.info(`Skipping in in channel: ${message.member.voice.channel.id} of server ${message.client.guildId}...`);
+  logger.info(`Skipping in in channel: [${message.member.voice.channel.name}] of server [${message.guild.name}]...`);
   currentQueueObject.audioPlayer.stop();
   message.react("💯");
 };
@@ -84,12 +84,12 @@ const handlePlay = async (message) => {
 
   let results;
   try {
-    logger.info.info(`Searching youtube for ${request} from user: ${message.author.username} in channel: ${message.member.voice.channel.id} of server ${message.client.guildId}...`);
+    logger.info(`Searching youtube for [${request}] from user: [${message.author.username}] in channel: [${message.member.voice.channel.name}] of server [${message.guild.name}]...`);
     results = await ytStream.search(request);
 
     if (currentQueueObject) {
       currentQueueObject.songQueue.push(results[0].url);
-      logger.info.info(`${results[0].title} has been added to the queue!`);
+      logger.info(`[${results[0].title}] has been added to the queue!`);
     } else {
       const player = createAudioPlayer({
         behaviors: [NoSubscriberBehavior.Stop],
@@ -119,15 +119,15 @@ const handlePlay = async (message) => {
       });
       message.client.queueObject.set(guildId, queueObject);
       currentQueueObject = message.client.queueObject.get(guildId);
-      logger.info.info(`${results[0].title} has been added to the queue for channel: ${message.member.voice.channel.id} of server: ${message.client.user.guildId}!`);
+      logger.info(`[${results[0].title}] has been added to the queue for channel: [${message.member.voice.channel.name} of server: [${message.guild.name}]!`);
     }
     //queue.push(results[0].url);
   } catch (ytSearchErr) {
-    logger.error.error(`${ytSearchErr.toString()}`);
+    logger.error(ytSearchErr);
     if (message.guildId === "747327258854948935") {
       return message.reply(`${request} my balls <:slugma:852187551766806578>`);
     }
-    message.reply(`Search for ${request} failed.`);
+    message.reply(`Search for ${request} failed`);
     return;
   }
 
@@ -157,7 +157,7 @@ const playStream = async (currentQueueObject) => {
     currentQueueObject.connection.subscribe(currentQueueObject.audioPlayer);
     currentQueueObject.songQueue.shift();
   } catch (err) {
-    logger.error.error(`${err.toString()}`);
+    logger.error(err);
   }
 };
 
@@ -176,7 +176,7 @@ const joinChannel = async (message, voiceChannel) => {
       adapterCreator: voiceChannel.guild.voiceAdapterCreator,
     });
   } catch (joinChannelErr) {
-    logger.error.error(`${joinChannelErr.toString()}`);
+    logger.error(joinChannelErr);
   }
 };
 
