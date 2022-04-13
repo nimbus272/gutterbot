@@ -12,9 +12,7 @@ async function reroll(speak) {
 async function reroll_tongues(in_tongues) {
   if (in_tongues === talk.huntin_phrases[7]) {
     in_tongues =
-      talk.huntin_phrases[
-        Math.floor(Math.random() * talk.huntin_phrases.length)
-      ];
+      talk.huntin_phrases[Math.floor(Math.random() * talk.huntin_phrases.length)];
   }
   return in_tongues;
 }
@@ -51,4 +49,20 @@ const handleAt = async (message) => {
   }
 };
 
-module.exports = { handleAt };
+const handleHelp = async (message) => {
+
+  if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}help play`)) {
+    return message.reply(`The !play command is used to add videos to the queue. You can either provide a URL or a search term. If you provide a search term, the first video in the search results will be added to the queue. Example: "!play never gonna give you up"`);
+  }
+  if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}help skip`)) {
+    return message.reply(`The !skip command is used to skip the currently playing video. If there is another video in the queue, it will play next. Example: "!skip"`);
+  }
+  if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}help stop`)) {
+    return message.reply(`The !stop command is used to stop the currently playing video and empty the queue. Example: "!stop"`);
+  }
+      if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}help`)) {
+    return message.reply(`I am a music bot by <@133810029743570944> and <@334150403015049216>. Possible commands are "!play", "!skip", and "!stop". Type "!help" followed by a command for more info about that command.`);
+  }
+};
+
+module.exports = { handleAt, handleHelp };

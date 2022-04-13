@@ -1,4 +1,4 @@
-const  logger  = require("winston");
+const logger = require("winston");
 
 const {
   handlePlay,
@@ -7,7 +7,7 @@ const {
   handleKill,
 } = require(`${__dirname}/../util/musicCommands.js`);
 
-const { handleAt } = require(`${__dirname}/../util/funCommands.js`);
+const { handleAt, handleHelp } = require(`${__dirname}/../util/funCommands.js`);
 
 module.exports = {
   name: "messageCreate",
@@ -19,6 +19,10 @@ module.exports = {
       await handleAt(message);
     }
     if (!message.content.startsWith(process.env.PREFIX)) {
+      return;
+    }
+    if (message.content.startsWith(`${process.env.PREFIX}help`)) {
+      await handleHelp(message);
       return;
     }
 
@@ -40,8 +44,8 @@ module.exports = {
       if (message.guildId === "747327258854948935") {
         return message.reply("bro you suck <:slugma:852187551766806578>");
       } else {
-      return message.reply("bro you suck <:slugma:963669188914864169>");
-    }
+        return message.reply("bro you suck <:slugma:963669188914864169>");
+      }
     }
   },
 };
