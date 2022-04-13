@@ -44,7 +44,7 @@ const handleStop = async (message) => {
     return;
   }
   message.react("💯");
-  logger.info.info(`Stopping...`);
+  logger.info.info(`Stopping playback in channel: ${message.member.voice.channel.id} of server ${message.client.guildId}...`);
   currentQueueObject.audioPlayer.stop();
   currentQueueObject.songQueue = [];
 };
@@ -61,7 +61,7 @@ const handleSkip = async (message) => {
     message.reply("I don't really feel like it...");
     return;
   }
-  logger.info.info(`Skipping...`);
+  logger.info.info(`Skipping in in channel: ${message.member.voice.channel.id} of server ${message.client.guildId}...`);
   currentQueueObject.audioPlayer.stop();
   message.react("💯");
 };
@@ -84,7 +84,7 @@ const handlePlay = async (message) => {
 
   let results;
   try {
-    logger.info.info(`Searching youtube for ${request}`);
+    logger.info.info(`Searching youtube for ${request} from user: ${message.author.username} in channel: ${message.member.voice.channel.id} of server ${message.client.guildId}...`);
     results = await ytStream.search(request);
 
     if (currentQueueObject) {
@@ -119,7 +119,7 @@ const handlePlay = async (message) => {
       });
       message.client.queueObject.set(guildId, queueObject);
       currentQueueObject = message.client.queueObject.get(guildId);
-      logger.info.info(`${results[0].title} has been added to the queue!`);
+      logger.info.info(`${results[0].title} has been added to the queue for channel: ${message.member.voice.channel.id} of server: ${message.client.user.guildId}!`);
     }
     //queue.push(results[0].url);
   } catch (ytSearchErr) {
