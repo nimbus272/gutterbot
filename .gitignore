@@ -105,3 +105,5 @@ typings/
 .tern-port
 # Dockerfile
 Dockerfile
+
+./dist/
