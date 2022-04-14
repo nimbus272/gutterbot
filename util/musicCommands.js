@@ -95,7 +95,8 @@ const handlePlay = async (message) => {
         behaviors: [NoSubscriberBehavior.Stop],
       });
       let queueObject = {
-        connection: connection,
+        connection: {},
+        connectionSubscribed: false,
         audioPlayer: player,
         songQueue: [],
       };
@@ -103,12 +104,13 @@ const handlePlay = async (message) => {
       queueObject.songQueue.push(results[0].url);
       queueObject.audioPlayer.addListener(AudioPlayerStatus.Idle, () => {
         if (message.client.queueObject.get(guildId).songQueue.length > 0) {
-          playStream(message.client.queueObject.get(guildId));
+          playStream(message.client.queueObject.get(guildId), connection);
         } else {
           timeout = setTimeout(() => {
             message.client.queueObject
               .get(message.guildId)
               .connection.destroy();
+              currentQueueObject.connectionSubscribed = false;
           }, 120000);
         }
       });
@@ -136,14 +138,14 @@ const handlePlay = async (message) => {
     currentQueueObject.audioPlayer._state.status !== AudioPlayerStatus.Playing
   ) {
     //play song
-    playStream(currentQueueObject);
+    playStream(currentQueueObject, connection);
   }
   message.reply(
     `beep boop ${results[0].url} has been added to the queue :robot:`
   );
 };
 
-const playStream = async (currentQueueObject) => {
+const playStream = async (currentQueueObject, connection) => {
   if (currentQueueObject.songQueue.length === 0) {
     return;
   }
@@ -152,9 +154,14 @@ const playStream = async (currentQueueObject) => {
     let resource = createAudioResource(stream.stream, {
       inputType: stream.type,
     });
-    currentQueueObject.audioPlayer.play(resource);
+    if (!currentQueueObject.connectionSubscribed) {
+      currentQueueObject.connection = connection;
+      currentQueueObject.connection.subscribe(currentQueueObject.audioPlayer);
+      currentQueueObject.connectionSubscribed = true;
+    }
+    
 
-    currentQueueObject.connection.subscribe(currentQueueObject.audioPlayer);
+    currentQueueObject.audioPlayer.play(resource);
     currentQueueObject.songQueue.shift();
   } catch (err) {
     logger.error(err);
