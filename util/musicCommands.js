@@ -107,6 +107,7 @@ const handlePlay = async (message) => {
           playStream(message.client.queueObject.get(guildId), connection);
         } else {
           timeout = setTimeout(() => {
+            logger.info(`Destroying voice connection for [${message.guild.name}]`);
             message.client.queueObject
               .get(message.guildId)
               .connection.destroy();
