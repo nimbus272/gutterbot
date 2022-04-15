@@ -120,7 +120,7 @@ const handleHelp = async (message) => {
   }
   if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}help`)) {
     return message.reply(
-    `I am a music bot by Dennis and Will. Possible commands are "!play", "!skip", and "!stop". Type "!help" followed by a command for more info about that command.   
+    `I am a music bot by Dennis and Will. Possible commands are "!play", "!skip", and "!stop". Type "!help" followed by a command for more info about that command. You can also @ me for a funny reply.
     Example: "!help play"`
     );
   }
