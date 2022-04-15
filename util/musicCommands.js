@@ -8,6 +8,8 @@ const {
   joinVoiceChannel,
   createAudioResource,
 } = require("@discordjs/voice");
+const ServerAudioManager = require(path.join(__dirname, 'constructor.js'));
+
 const {logger} = require(path.join(__dirname, '..', 'logger'));
 
 const handleKill = async (message) => {
@@ -94,12 +96,16 @@ const handlePlay = async (message) => {
       const player = createAudioPlayer({
         behaviors: [NoSubscriberBehavior.Stop],
       });
+
+
       let queueObject = {
         connection: {},
         connectionSubscribed: false,
         audioPlayer: player,
         songQueue: [],
       };
+
+
       let timeout;
       queueObject.songQueue.push(results[0].url);
       queueObject.audioPlayer.addListener(AudioPlayerStatus.Idle, () => {

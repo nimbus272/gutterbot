@@ -13,7 +13,7 @@ async function reroll(speak) {
 }
 
 async function activate(message) {
-  message.reply("gutterbot.exe ver 1.69 is online");
+  message.reply("gutterbot.exe ver 1.69 is online. nice.");
   return;
 }
 
@@ -83,7 +83,7 @@ const handleAt = async (message) => {
       } else {
         reroll(speak);
         logger.info(
-          `Sending a funny quip to guild: [${message.guild.name}] Bweep.`
+          `Sending a funny quip to server: [${message.guild.name}] Bweep.`
         );
         return message.reply(speak);
       }
