@@ -6,7 +6,7 @@ function ServerAudioManager(
   connection,
   guildId,
   voiceChannel,
-  guildName
+  guildName,
 ) {
   this.connection = connection;
   this.audioPlayer = null;
@@ -16,6 +16,7 @@ function ServerAudioManager(
   this.huntin = false;
   this.guildId = guildId;
   this.voiceChannel = voiceChannel;
+  this.currentMessage = null;
   this.playMusic = async (message) => {
     if (
       this.audioPlayer._state.status !== AudioPlayerStatus.Playing
@@ -23,9 +24,6 @@ function ServerAudioManager(
       //play song
       await playStream(this);
     }
-    message.reply(
-      `beep boop ${this.songQueue[0]} has been added to the queue :robot:`
-    );
   }
 
   createAudioPlayerWithListeners(this);

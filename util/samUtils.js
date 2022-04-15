@@ -64,6 +64,7 @@ module.exports = {
     }
     sam.songQueue.push(results[0].url);
     logger.info(`[${results[0].title}] has been added to the queue!`);
+    sam.currentMessage.reply(`${results[0].url} has been added to the queue!`);
   },
 
   validateChannel: (message) => {

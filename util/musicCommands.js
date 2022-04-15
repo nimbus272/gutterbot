@@ -73,6 +73,7 @@ const handlePlay = async (message) => {
     );
     message.client.samMap.set(sam.guildId, sam);
   }
+  sam.currentMessage = message;
   //get search from arguments
   let request = trimRequest(message);
   logger.info(
@@ -83,7 +84,7 @@ const handlePlay = async (message) => {
     `[${sam.songQueue[0]}] has been added to the queue for channel: [${message.member.voice.channel.name} of server: [${message.guild.name}]!`
   );
 
-  await sam.playMusic(message);
+  await sam.playMusic();
 };
 
 module.exports = { handlePlay, handleSkip, handleStop, handleKill };
