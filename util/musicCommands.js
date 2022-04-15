@@ -1,32 +1,25 @@
 const path = require("path");
-const play = require("play-dl");
-const ytStream = require("yt-stream");
+const { AudioPlayerStatus, createAudioPlayer } = require("@discordjs/voice");
 const {
-  AudioPlayerStatus,
-  NoSubscriberBehavior,
-  createAudioPlayer,
-  joinVoiceChannel,
-  createAudioResource,
-} = require("@discordjs/voice");
-
+  joinChannel,
+  trimRequest,
+  populateQ,
+  validateChannel,
+} = require(path.join(__dirname, "samUtils"));
 const ServerAudioManager = require(path.join(__dirname, "constructor"));
-
 const { logger } = require(path.join(__dirname, "..", "logger"));
 
 const handleKill = async (message) => {
-  let guildId = message.guildId;
-  let currentQueueObject = message.client.queueObject.get(guildId);
+  const sam = message.client.samMap.get(message.guild.id);
 
   if (
     message.author.username === "nimbus272" ||
     message.author.username === "swill"
   ) {
     await message.reply(`:b:EACE`);
-    if (
-      currentQueueObject.audioPlayer._state.status === AudioPlayerStatus.Playing
-    ) {
-      currentQueueObject.audioPlayer.stop();
-      currentQueueObject.connection.destroy();
+    if (sam.audioPlayer._state.status === AudioPlayerStatus.Playing) {
+      sam.audioPlayer.stop();
+      sam.connection.destroy();
     }
     process.exit();
   } else {
@@ -35,14 +28,11 @@ const handleKill = async (message) => {
 };
 
 const handleStop = async (message) => {
-  let guildId = message.guildId;
-  let currentQueueObject = message.client.queueObject.get(guildId);
-  if (!currentQueueObject) {
+  const sam = message.client.samMap.get(message.guildId);
+  if (!sam) {
     return message.reply("Why don't you ask me later...");
   }
-  if (
-    currentQueueObject.audioPlayer._state.status !== AudioPlayerStatus.Playing
-  ) {
+  if (sam.audioPlayer._state.status !== AudioPlayerStatus.Playing) {
     message.reply("I don't really feel like it...");
     return;
   }
@@ -50,154 +40,50 @@ const handleStop = async (message) => {
   logger.info(
     `Stopping playback in channel: [${message.member.voice.channel.name}] of server [${message.guild.name}]...`
   );
-  currentQueueObject.audioPlayer.stop();
-  currentQueueObject.songQueue = [];
+  sam.audioPlayer.stop();
+  sam.songQueue = [];
 };
 
 const handleSkip = async (message) => {
-  let guildId = message.guildId;
-  let currentQueueObject = message.client.queueObject.get(guildId);
-  if (!currentQueueObject) {
+  const sam = message.client.samMap.get(message.guildId);
+  if (!sam) {
     return message.reply("I don't really feel like it...");
   }
-  if (
-    currentQueueObject.audioPlayer._state.status !== AudioPlayerStatus.Playing
-  ) {
+  if (sam.audioPlayer._state.status !== AudioPlayerStatus.Playing) {
     message.reply("I don't really feel like it...");
     return;
   }
   logger.info(
     `Skipping in in channel: [${message.member.voice.channel.name}] of server [${message.guild.name}]...`
   );
-  currentQueueObject.audioPlayer.stop();
+  sam.audioPlayer.stop();
   message.react("💯");
 };
 
 const handlePlay = async (message) => {
-  //get the id of the current server
-  let sam = message.client.samMap.get(guildId);
+  validateChannel(message);
 
+  let sam = message.client.samMap.get(message.guild.id);
   if (!sam) {
-    sam = new ServerAudioManager(
-      await joinChannel(message, message.member.voice.channel),
-      createAudioPlayer(),
+    sam = await new ServerAudioManager(
+      await joinChannel(message.member.voice.channel),
       message.guildId,
-      message.member.voice.channel
+      message.member.voice.channel,
+      message.guild.name
     );
-    
+    message.client.samMap.set(sam.guildId, sam);
   }
   //get search from arguments
   let request = trimRequest(message);
   logger.info(
     `Searching youtube for [${request}] from user: [${message.author.username}] in channel: [${message.member.voice.channel.name}] of server [${message.guild.name}]...`
   );
-    await populateQ(request, sam);
-
-
-  
-  message.client.queueObject.set(guildId, queueObject);
-  currentQueueObject = message.client.queueObject.get(guildId);
+  await populateQ(request, sam);
   logger.info(
-    `[${results[0].title}] has been added to the queue for channel: [${message.member.voice.channel.name} of server: [${message.guild.name}]!`
+    `[${sam.songQueue[0]}] has been added to the queue for channel: [${message.member.voice.channel.name} of server: [${message.guild.name}]!`
   );
 
-  //queue.push(results[0].url);
-
-  //if audio is not currently playing
-  if (
-    currentQueueObject.audioPlayer._state.status !== AudioPlayerStatus.Playing
-  ) {
-    //play song
-    playStream(currentQueueObject, connection);
-  }
-  message.reply(
-    `beep boop ${results[0].url} has been added to the queue :robot:`
-  );
+  await sam.playMusic(message);
 };
-
-const playStream = async (currentQueueObject, connection) => {
-  if (currentQueueObject.songQueue.length === 0) {
-    return;
-  }
-  try {
-    let stream = await play.stream(currentQueueObject.songQueue[0]);
-    let resource = createAudioResource(stream.stream, {
-      inputType: stream.type,
-    });
-    if (!currentQueueObject.connectionSubscribed) {
-      currentQueueObject.connection = connection;
-      currentQueueObject.connection.subscribe(currentQueueObject.audioPlayer);
-      currentQueueObject.connectionSubscribed = true;
-    }
-
-    currentQueueObject.audioPlayer.play(resource);
-    currentQueueObject.songQueue.shift();
-  } catch (err) {
-    logger.error(err);
-  }
-};
-
-const joinChannel = async (message, voiceChannel) => {
-  if (null === voiceChannel) {
-    if (message.guildId === "747327258854948935") {
-      message.reply("In what channel? <:PATHETIC:778014063023357953>");
-    } else {
-      return message.reply("In what channel? <:PATHETIC:963669463356563476>");
-    }
-    try {
-      return joinVoiceChannel({
-        channelId: voiceChannel.id,
-        guildId: voiceChannel.guild.id,
-        adapterCreator: voiceChannel.guild.voiceAdapterCreator,
-      });
-    } catch (joinChannelErr) {
-      logger.error(joinChannelErr);
-    }
-  }
-};
-
-function trimRequest(message) {
-  let request = message.content.split(" ");
-  request.shift();
-  return request.join(" ");
-}
-
-async function populateQ(request, sam) {
-  let results;
-  try {
-    results = await ytStream.search(request);
-  } catch (ytSearchErr) {
-    logger.error(ytSearchErr);
-    if (message.guildId === "747327258854948935") {
-      return message.reply(`${request} my balls <:slugma:852187551766806578>`);
-    }
-    message.reply(`Search for ${request} failed`);
-    return;
-  }
-  sam.songQueue.push(results[0].url);
-  logger.info(`[${results[0].title}] has been added to the queue!`);
-}
-
-function addListeners(sam) {
-  let timeout;
-
- 
-  sam.audioPlayer.addListener(AudioPlayerStatus.Idle, () => {
-    if (sam.songQueue.length > 0) {
-      playStream(sam, sam.connection);
-    } else {
-      timeout = setTimeout(() => {
-        logger.info(`Destroying voice connection for [${message.guild.name}]`);
-        message.client.queueObject.get(message.guildId).connection.destroy();
-        currentQueueObject.connectionSubscribed = false;
-      }, 120000);
-    }
-  });
-  queueObject.audioPlayer.addListener(AudioPlayerStatus.Playing, () => {
-    if (timeout) {
-      clearTimeout(timeout);
-    }
-  });
-}
 
 module.exports = { handlePlay, handleSkip, handleStop, handleKill };
