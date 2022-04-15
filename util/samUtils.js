@@ -79,8 +79,11 @@ module.exports = {
       if (message.guildId === "747327258854948935") {
         message.reply("In what channel? <:PATHETIC:778014063023357953>");
       } else {
-        return message.reply("In what channel? <:PATHETIC:963669463356563476>");
+        message.reply("In what channel? <:PATHETIC:963669463356563476>");
+        return false;
       }
+    } else {
+      return true;
     }
   },
 };

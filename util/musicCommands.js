@@ -61,8 +61,8 @@ const handleSkip = async (message) => {
 };
 
 const handlePlay = async (message) => {
-  validateChannel(message);
 
+  if (validateChannel(message)) {
   let sam = message.client.samMap.get(message.guild.id);
   if (!sam) {
     sam = await new ServerAudioManager(
@@ -76,11 +76,15 @@ const handlePlay = async (message) => {
   sam.currentMessage = message;
   //get search from arguments
   let request = trimRequest(message);
+  
   logger.info(
     `Searching youtube for [${request}] from user: [${message.author.username}] in channel: [${message.member.voice.channel.name}] of server: [${message.guild.name}]...`
   );
+
   await populateQ(request, sam);
   await sam.playMusic();
+} else {
+  logger.info('Cannot Join. Invalid Voice Channel. Bep.');
+}
 };
-
 module.exports = { handlePlay, handleSkip, handleStop, handleKill };
