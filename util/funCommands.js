@@ -42,9 +42,11 @@ const trimAt = async (message) => {
 };
 
 const handleAt = async (message) => {
+
   let in_tongues =
     talk.huntin_phrases[Math.floor(Math.random() * talk.huntin_phrases.length)];
   let speak = talk.phrases[Math.floor(Math.random() * talk.phrases.length)];
+
   if (
     message.content.includes("<@963619581346344991>") ||
     message.content.includes("<@961706313375703050>")
@@ -56,10 +58,10 @@ const handleAt = async (message) => {
         logger.info(
           `We're in the hunting server with the boys. Hell yeah. Booop.`
         );
-        in_tongues = reroll_tongues(in_tongues)
+        in_tongues = await reroll_tongues(in_tongues)
         return message.reply(in_tongues);
       } else {
-        speak = reroll(speak)
+        speak = await reroll(speak)
         logger.info(
           `Sending a funny quip to guild: [${message.guild.name}] beeeeep.`
         );
@@ -78,10 +80,10 @@ const handleAt = async (message) => {
         logger.info(
           `We're in the hunting server with the boys. Hell yeah. Beep.`
         );
-        in_tongues = reroll_tongues(in_tongues);
+        in_tongues = await reroll_tongues(in_tongues);
         return message.reply(in_tongues);
       } else {
-        speak = reroll(speak);
+        speak = await reroll(speak);
         logger.info(
           `Sending a funny quip to server: [${message.guild.name}] Bweep.`
         );
