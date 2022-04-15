@@ -27,7 +27,7 @@ const client = new Discord.Client({
   intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"],
 });
 
-client.audioManagerMap = new Map();
+client.samMap = new Map();
 
 const eventFiles = fs
   .readdirSync(`${__dirname}/events`)
