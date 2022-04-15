@@ -56,14 +56,14 @@ const handleAt = async (message) => {
         logger.info(
           `We're in the hunting server with the boys. Hell yeah. Booop.`
         );
-        reroll_tongues(in_tongues);
-        return message.reply(in_tongues);
+        
+        return message.reply(reroll_tongues(in_tongues));
       } else {
-        reroll(speak);
+        
         logger.info(
           `Sending a funny quip to guild: [${message.guild.name}] beeeeep.`
         );
-        return message.reply(speak);
+        return message.reply(reroll(speak));
       }
     }
     return;
