@@ -46,7 +46,7 @@ const handleStop = async (message) => {
   }
   message.react("💯");
   logger.info(
-    `Stopping playback in channel: [${message.member.voice.channel.name}] of server: [${message.guild.name}]...`
+    `Stopping playback in channel: [${sam.voice.channel.name}] of server: [${message.guild.name}]...`
   );
   sam.audioPlayer.stop();
   sam.songQueue = [];
@@ -62,7 +62,7 @@ const handleSkip = async (message) => {
     return;
   }
   logger.info(
-    `Skipping in in channel: [${message.member.voice.channel.name}] of server: [${message.guild.name}]...`
+    `Skipping in in channel: [${sam.voice.channel.name}] of server: [${message.guild.name}]...`
   );
   sam.audioPlayer.stop();
   message.react("💯");
@@ -94,7 +94,7 @@ const handlePlay = async (message) => {
     let request = trimRequest(message);
 
     logger.info(
-      `Searching youtube for [${request}] from user: [${message.author.username}] in channel: [${message.member.voice.channel.name}] of server: [${message.guild.name}]...`
+      `Searching youtube for [${request}] from user: [${message.author.username}] in channel: [${sam.voice.channel.name}] of server: [${message.guild.name}]...`
     );
 
     await populateQ(request, sam);
