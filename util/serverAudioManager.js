@@ -19,12 +19,11 @@ function ServerAudioManager(guildId, guildName) {
   this.currentMessage = null;
   this.playMusic = async () => {
     if (this.audioPlayer._state.status !== AudioPlayerStatus.Playing) {
-      //play song
       await playStream(this);
     }
   };
   this.joinChannel = async () => {
-    if (!this.connection) {
+    if (!this.connection || this.connection.channelId !== this.voiceChannel.id) {
       try {
         this.connection = await joinVoiceChannel({
           channelId: this.voiceChannel.id,
@@ -34,8 +33,8 @@ function ServerAudioManager(guildId, guildName) {
       } catch (joinChannelErr) {
         logger.error(joinChannelErr);
       }
+      this.connection.subscribe(this.audioPlayer);
     }
-    this.connection.subscribe(this.audioPlayer);
   };
 
   createAudioPlayerWithListeners(this);
