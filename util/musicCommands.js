@@ -1,12 +1,11 @@
 const path = require("path");
 const { AudioPlayerStatus, createAudioPlayer } = require("@discordjs/voice");
 const {
-  joinChannel,
   trimRequest,
   populateQ,
   validateChannel,
 } = require(path.join(__dirname, "samUtils"));
-const ServerAudioManager = require(path.join(__dirname, "constructor"));
+const ServerAudioManager = require(path.join(__dirname, "serverAudioManager"));
 const { logger } = require(path.join(__dirname, "..", "logger"));
 
 const handleKill = async (message) => {
@@ -78,14 +77,14 @@ const handlePlay = async (message) => {
   let sam = message.client.samMap.get(message.guild.id);
   if (!sam) {
     sam = await new ServerAudioManager(
-      await joinChannel(message.member.voice.channel),
       message.guildId,
-      message.member.voice.channel,
       message.guild.name
     );
     message.client.samMap.set(sam.guildId, sam);
   }
   sam.currentMessage = message;
+  sam.voiceChannel = message.member.voice.channel;
+  sam.connection = sam.joinChannel();
   //get search from arguments
   let request = trimRequest(message);
   

@@ -15,8 +15,7 @@ async function reroll(speak) {
 async function activate(message) {
   message.reply("gutterbot.exe ver 1.69 is online. nice.");
   const hotJosh = await message.client.channels.fetch('747327258854948938')
-  hotJosh.send(`<@429481922729738280>`)
-  return;
+  hotJosh.send(`<@429481922729738280>`);
 }
 
 async function reroll_tongues(in_tongues) {
@@ -40,7 +39,6 @@ const trimAt = async (message) => {
   let at = message.content.split("<@")[1].split(">")[0];
   message.content = message.content.replace(`<@${at}>`, "");
   logger.info("Successfully trimmed @ from search request.");
-  return message;
 };
 
 const handleAt = async (message) => {
