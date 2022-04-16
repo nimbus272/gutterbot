@@ -15,7 +15,7 @@ module.exports = {
       `Fetching audio stream and creating resource in [${sam.voiceChannel.name}] of [${sam.guildName}]`
     );
     try {
-      let stream = await play.stream(sam.songQueue[0]);
+      let stream = await play.stream(sam.songQueue[0].url);
       resource = createAudioResource(stream.stream, {
         inputType: stream.type,
       });
@@ -24,7 +24,7 @@ module.exports = {
     }
     await sam.joinChannel();
     sam.audioPlayer.play(resource);
-    sam.currentSong = sam.songQueue.shift();
+    sam.currentSong = sam.songQueue.shift().title;
     logger.info(
       `Playing [${sam.currentSong}] in [${sam.voiceChannel.name}] of [${sam.guildName}]`
     );
@@ -55,10 +55,10 @@ module.exports = {
       sam.currentMessage.reply(`No results for that search term. bweeooo :c`);
       return;
     }
-    sam.songQueue.push(results[0].url);
-    sam.currentMessage.reply(`${results[0].url} has been added to the queue!`);
+    sam.songQueue.push({title: results[0].title, url: results[0].url});
+    sam.currentMessage.reply(`${sam.songQueue[0].url} has been added to the queue!`);
     logger.info(
-      `[${sam.songQueue[0]}] has been added to the queue for channel: [${sam.voiceChannel.name}] of server: [${sam.guildName}]!`
+      `[${sam.songQueue[0].title}] has been added to the queue for channel: [${sam.voiceChannel.name}] of server: [${sam.guildName}]!`
     );
   },
 

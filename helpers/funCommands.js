@@ -1,15 +1,31 @@
 const path = require("path");
 const { logger } = require(path.join(__dirname, "..", "models", "logger"));
-const {
-  trimAt,
-  determinePhraseFromGuild,
-} = require(path.join(__dirname, "..", "utils", "funUtils"));
+const { trimAt, determinePhraseFromGuild } = require(path.join(
+  __dirname,
+  "..",
+  "utils",
+  "funUtils"
+));
 const jsonPhrases = require(`${__dirname}/../resources/thingsForRobotsToSay.json`);
 
 async function handleActivate(message) {
   message.reply("gutterbot.exe ver 1.69 is online. nice.");
-  const hotJosh = await message.client.channels.fetch("747327258854948938");
-  hotJosh.send(`<@429481922729738280>`);
+  if (
+    message.content
+      .toLowerCase()
+      .startsWith(`${process.env.PREFIX}activate josh`)
+  ) {
+    if (
+      message.author.id === "133810029743570944" ||
+      message.author.id === "334150403015049216"
+    ) {
+      const hotJosh = await message.client.channels.fetch("747327258854948938");
+      hotJosh.send(`<@429481922729738280>`);
+    }
+    else {
+      message.reply("you don't have the right");
+    }
+  }
 }
 
 const handleAt = async (message) => {
@@ -77,6 +93,6 @@ const handleNoCommand = (message) => {
   } else {
     return message.reply("bro you suck <:slugma:963669188914864169>");
   }
-}
+};
 
 module.exports = { handleAt, handleHelp, handleActivate, handleNoCommand };
