@@ -31,8 +31,10 @@
     "assets": [
       ".env",
       "/events/*.js",
-      "/util/*.js",
-      "/util/thingsForRobotsToSay.json"
+      "/utils/*.js",
+      "/resources/thingsForRobotsToSay.json",
+      "/helpers/*.js",
+      "/models/*.js"
     ]
   },
   "private": true

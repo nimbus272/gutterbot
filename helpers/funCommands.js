@@ -1,6 +1,6 @@
 const path = require("path");
-const {logger} = require(path.join(__dirname, "..", "logger"));
-const talk = require(`${__dirname}/../util/thingsForRobotsToSay.json`);
+const {logger} = require(path.join(__dirname, "..", "models", "logger"));
+const talk = require(`${__dirname}/../resources/thingsForRobotsToSay.json`);
 
 async function reroll(speak) {
   if (speak === talk.phrases[7]) {

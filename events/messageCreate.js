@@ -4,14 +4,14 @@ const {
   handleStop,
   handleKill,
   handleInfo,
-} = require(`${__dirname}/../util/musicCommands.js`);
+} = require(`${__dirname}/../helpers/musicCommands.js`);
 
 const {
   handleAt,
   handleHelp,
   trimAt,
   activate,
-} = require(`${__dirname}/../util/funCommands.js`);
+} = require(`${__dirname}/../helpers/funCommands.js`);
 
 module.exports = {
   name: "messageCreate",

@@ -2,7 +2,7 @@ const path = require("path");
 const play = require("play-dl");
 const ytStream = require("yt-stream");
 const { createAudioResource } = require("@discordjs/voice");
-const { logger } = require(path.join(__dirname, "..", "logger"));
+const { logger } = require(path.join(__dirname, "..", "models", "logger"));
 
 module.exports = {
 

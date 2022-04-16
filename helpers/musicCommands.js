@@ -1,15 +1,16 @@
 const path = require("path");
+//createAudioPlayer and joinVoiceChannel are necessary here
 const {
   AudioPlayerStatus,
   createAudioPlayer,
   joinVoiceChannel,
 } = require("@discordjs/voice");
 const { trimRequest, populateQ, validateChannel } = require(path.join(
-  __dirname,
+  __dirname, "..", "utils",
   "samUtils"
 ));
-const ServerAudioManager = require(path.join(__dirname, "serverAudioManager"));
-const { logger } = require(path.join(__dirname, "..", "logger"));
+const ServerAudioManager = require(path.join(__dirname, "..", "models", "serverAudioManager"));
+const { logger } = require(path.join(__dirname, "..", "models", "logger"));
 
 const handleKill = async (message) => {
   const sam = message.client.samMap.get(message.guild.id);
