@@ -7,7 +7,7 @@ const {
 } = require("@discordjs/voice");
 const { trimRequest, populateQ, validateChannel } = require(path.join(
   __dirname, "..", "utils",
-  "samUtils"
+  "playUtils"
 ));
 const ServerAudioManager = require(path.join(__dirname, "..", "models", "serverAudioManager"));
 const { logger } = require(path.join(__dirname, "..", "models", "logger"));

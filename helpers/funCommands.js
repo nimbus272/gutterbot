@@ -1,101 +1,42 @@
 const path = require("path");
-const {logger} = require(path.join(__dirname, "..", "models", "logger"));
-const talk = require(`${__dirname}/../resources/thingsForRobotsToSay.json`);
+const { logger } = require(path.join(__dirname, "..", "models", "logger"));
+const {
+  trimAt,
+  determinePhraseFromGuild,
+} = require(path.join(__dirname, "..", "utils", "funUtils"));
+const jsonPhrases = require(`${__dirname}/../resources/thingsForRobotsToSay.json`);
 
-async function reroll(speak) {
-  if (speak === talk.phrases[7]) {
-    logger.info(
-      "Rerolled anti-riley propaganda. If it gets through now, it was fate."
-    );
-    speak = talk.phrases[Math.floor(Math.random() * talk.phrases.length)];
-  }
-  return speak;
-}
-
-async function activate(message) {
+async function handleActivate(message) {
   message.reply("gutterbot.exe ver 1.69 is online. nice.");
-  const hotJosh = await message.client.channels.fetch('747327258854948938')
+  const hotJosh = await message.client.channels.fetch("747327258854948938");
   hotJosh.send(`<@429481922729738280>`);
 }
 
-async function reroll_tongues(in_tongues) {
-  if (in_tongues === talk.huntin_phrases[7]) {
-    logger.info(
-      "Rerolled anti-riley propaganda. If it gets through now, it was fate."
-    );
-    in_tongues =
-      talk.huntin_phrases[
-        Math.floor(Math.random() * talk.huntin_phrases.length)
-      ];
-  }
-  return in_tongues;
-}
-
-//  if (message.guildId === "747327258854948935")
-//gutterbot id = "<@961706313375703050>"
-//gutterbot-testing id = "<@963619581346344991>"
-
-const trimAt = async (message) => {
-  let at = message.content.split("<@")[1].split(">")[0];
-  message.content = message.content.replace(`<@${at}>`, "");
-  logger.info("Successfully trimmed @ from search request.");
-};
-
 const handleAt = async (message) => {
-
-  let in_tongues =
-    talk.huntin_phrases[Math.floor(Math.random() * talk.huntin_phrases.length)];
-  let speak = talk.phrases[Math.floor(Math.random() * talk.phrases.length)];
-
-  if (
-    message.content.includes("<@963619581346344991>") ||
-    message.content.includes("<@961706313375703050>")
-  ) {
-    let at = message.content.split("<@")[1].split(">")[0];
-    if (at === message.client.user.id) {
-      logger.info("Mention detected. Bweeeeep.");
-      if (message.guildId === "747327258854948935") {
-        logger.info(
-          `We're in the hunting server with the boys. Hell yeah. Booop.`
-        );
-        in_tongues = await reroll_tongues(in_tongues)
-        return message.reply(in_tongues);
-      } else {
-        speak = await reroll(speak)
-        logger.info(
-          `Sending a funny quip to guild: [${message.guild.name}] beeeeep.`
-        );
-        return message.reply(speak);
-      }
-    }
-    return;
+  let at = message.content.split("<@")[1].split(">")[0];
+  //if bot is mentioned
+  if (at === message.client.user.id) {
+    logger.info("Mention detected. Bweeeeep.");
+    let phrase = determinePhraseFromGuild(message);
+    trimAt(message);
+    logger.info(`Sending a funny quip to [${message.guild.name}]`);
+    return message.reply(phrase);
   }
+  //if group bot belongs to is mentioned
   if (message.content.includes("<@&")) {
     let roleID = message.content.split("<@&")[1].split(">")[0];
     const botGuildObject = message.guild.members._cache.get(
       message.client.user.id
     );
     if (botGuildObject.roles.cache.has(roleID)) {
-      if (message.guildId === "747327258854948935") {
-        logger.info(
-          `We're in the hunting server with the boys. Hell yeah. Beep.`
-        );
-        in_tongues = await reroll_tongues(in_tongues);
-        return message.reply(in_tongues);
-      } else {
-        speak = await reroll(speak);
-        logger.info(
-          `Sending a funny quip to server: [${message.guild.name}] Bweep.`
-        );
-        return message.reply(speak);
-      }
+      logger.info("Group mention detected. Bweeeeep.");
+      let phrase = determinePhraseFromGuild(message);
+      trimAt(message);
+      logger.info(`Sending a funny quip to [${message.guild.name}]`);
+      return message.reply(phrase);
     }
   }
 };
-
-const handleInfo = async (message) => {
-  return message.reply(``)
-}
 
 const handleHelp = async (message) => {
   if (
@@ -124,10 +65,18 @@ const handleHelp = async (message) => {
   }
   if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}help`)) {
     return message.reply(
-    `I am a music bot by Dennis and Will. Possible commands are "!play", "!skip", and "!stop". Type "!help" followed by a command for more info about that command. You can also @ me for a funny reply.
+      `I am a music bot by Dennis and Will. Possible commands are "!play", "!skip", and "!stop". Type "!help" followed by a command for more info about that command. You can also @ me for a funny reply.
     Example: "!help play"`
     );
   }
 };
 
-module.exports = { handleAt, handleHelp, trimAt, activate, handleInfo };
+const handleNoCommand = (message) => {
+  if (message.guildId === "747327258854948935") {
+    return message.reply("bro you suck <:slugma:852187551766806578>");
+  } else {
+    return message.reply("bro you suck <:slugma:963669188914864169>");
+  }
+}
+
+module.exports = { handleAt, handleHelp, handleActivate, handleNoCommand };

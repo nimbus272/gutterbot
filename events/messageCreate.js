@@ -9,8 +9,8 @@ const {
 const {
   handleAt,
   handleHelp,
-  trimAt,
-  activate,
+  handleActivate,
+  handleNoCommand
 } = require(`${__dirname}/../helpers/funCommands.js`);
 
 module.exports = {
@@ -20,18 +20,7 @@ module.exports = {
       return;
     }
     if (
-      message.content.startsWith(`${process.env.PREFIX}`) &&
       message.content.includes("<@")
-    ) {
-      if (message.author.id === "429481922729738280"){
-        return;
-      }
-      await handleAt(message);
-      await trimAt(message);
-    }
-    if (
-      message.content.includes("<@") &&
-      !message.content.startsWith(`${process.env.PREFIX}`)
     ) {
       if (message.author.id === "429481922729738280"){
         return;
@@ -42,7 +31,7 @@ module.exports = {
       return;
     }
     if (message.content.startsWith(`${process.env.PREFIX}activate`)) {
-      await activate(message);
+      await handleActivate(message);
       return;
     }
     if (message.content.startsWith(`${process.env.PREFIX}help`)) {
@@ -68,11 +57,7 @@ module.exports = {
     ) {
       await handleKill(message);
     } else {
-      if (message.guildId === "747327258854948935") {
-        return message.reply("bro you suck <:slugma:852187551766806578>");
-      } else {
-        return message.reply("bro you suck <:slugma:963669188914864169>");
-      }
+      handleNoCommand(message)
     }
   },
 };

@@ -4,7 +4,7 @@ const {
   createAudioPlayer,
   joinVoiceChannel,
 } = require("@discordjs/voice");
-const { playStream } = require(path.join(__dirname, "..", "utils", "samUtils"));
+const { playStream } = require(path.join(__dirname, "..", "utils", "playUtils"));
 const { logger } = require(path.join(__dirname, "logger"));
 
 function ServerAudioManager(guildId, guildName) {
