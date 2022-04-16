@@ -60,6 +60,18 @@ const handleSkip = async (message) => {
   message.react("💯");
 };
 
+const handleInfo = async (message) => {
+  const sam = message.client.samMap.get(message.guildId);
+  if (!sam) {
+    return message.reply("...");
+  }
+  if (sam.audioPlayer._state.status !== AudioPlayerStatus.Playing) {
+    message.reply("I'm not playing anything..? lmao :joy:");
+    return;
+  }
+  return message.reply(`I'm currently playing: ${sam.currentSong}`);
+}
+
 const handlePlay = async (message) => {
 
   if (validateChannel(message)) {
@@ -87,4 +99,4 @@ const handlePlay = async (message) => {
   logger.info('Cannot Join. Invalid Voice Channel. Bep.');
 }
 };
-module.exports = { handlePlay, handleSkip, handleStop, handleKill };
+module.exports = { handlePlay, handleSkip, handleStop, handleKill, handleInfo };

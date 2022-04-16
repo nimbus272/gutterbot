@@ -14,6 +14,8 @@ async function reroll(speak) {
 
 async function activate(message) {
   message.reply("gutterbot.exe ver 1.69 is online. nice.");
+  const hotJosh = await message.client.channels.fetch('747327258854948938')
+  hotJosh.send(`<@429481922729738280>`)
   return;
 }
 
@@ -93,6 +95,10 @@ const handleAt = async (message) => {
   }
 };
 
+const handleInfo = async (message) => {
+  return message.reply(``)
+}
+
 const handleHelp = async (message) => {
   if (
     message.content.toLowerCase().startsWith(`${process.env.PREFIX}help play`)
@@ -126,4 +132,4 @@ const handleHelp = async (message) => {
   }
 };
 
-module.exports = { handleAt, handleHelp, trimAt, activate };
+module.exports = { handleAt, handleHelp, trimAt, activate, handleInfo };

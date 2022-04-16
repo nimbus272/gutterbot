@@ -3,6 +3,7 @@ const {
   handleSkip,
   handleStop,
   handleKill,
+  handleInfo,
 } = require(`${__dirname}/../util/musicCommands.js`);
 
 const {
@@ -22,6 +23,9 @@ module.exports = {
       message.content.startsWith(`${process.env.PREFIX}`) &&
       message.content.includes("<@")
     ) {
+      if (message.author.id === "429481922729738280"){
+        return;
+      }
       await handleAt(message);
       await trimAt(message);
     }
@@ -29,6 +33,9 @@ module.exports = {
       message.content.includes("<@") &&
       !message.content.startsWith(`${process.env.PREFIX}`)
     ) {
+      if (message.author.id === "429481922729738280"){
+        return;
+      }
       await handleAt(message);
     }
     if (!message.content.startsWith(process.env.PREFIX)) {
@@ -42,7 +49,10 @@ module.exports = {
       await handleHelp(message);
       return;
     }
-
+    if (message.content.startsWith(`${process.env.PREFIX}info`)) {
+      await handleInfo(message);
+      return;
+    }
     if (message.content.toLowerCase().startsWith(`${process.env.PREFIX}play`)) {
       await handlePlay(message);
     } else if (

@@ -27,7 +27,8 @@ module.exports = {
 
     sam.connection.subscribe(sam.audioPlayer);
     sam.audioPlayer.play(resource);
-    sam.songQueue.shift();
+    sam.currentSong = sam.songQueue.shift();
+    logger.info(`Playing [${sam.currentSong}] in [${sam.voiceChannel.name}] of [${sam.guildName}]`);
   },
 
   joinChannel: async (voiceChannel) => {
