@@ -50,8 +50,9 @@ function createAudioPlayerWithListeners(sam) {
       timeout = setTimeout(() => {
         logger.info(`Destroying voice connection for [${sam.guildName}]`);
         sam.connection.destroy();
-        sam.connection = null;
-      }, 120000);
+        sam.currentMessage.client.samMap.delete(sam.guildId);
+
+      }, 60000);
     }
   });
   player.addListener(AudioPlayerStatus.Playing, () => {
