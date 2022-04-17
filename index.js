@@ -8,6 +8,7 @@ const client = new Discord.Client({
 });
 
 client.samMap = new Map();
+client.stateMap = new Map();
 
 const eventFiles = fs
   .readdirSync(`${__dirname}/events`)
