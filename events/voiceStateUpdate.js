@@ -63,7 +63,7 @@ module.exports = {
 
       if (newState.client.stateMap.size > 0) {
         newState.client.stateMap.forEach((value, key) => {
-          if (value.guildId !== "812849394771820604") {
+          if (value.guildId !== "747327258854948935") {
             clearTimeout(value.timeout);
             newState.client.stateMap.delete(key);
           }

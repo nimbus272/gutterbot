@@ -25,7 +25,7 @@ module.exports = {
       textChannel.send(`<@${memberId}> Alone in a discord server?`);
       textChannel.send(`<:PATHETIC:778014063023357953>`);
       newState.client.stateMap.delete(memberId);
-    }, 10000);
+    }, 450000);
     newState.client.stateMap.set(memberId, {
       timeout: timeout,
       guildId: voiceChannel.guildId,
