@@ -9,7 +9,12 @@ module.exports = {
     ) {
       let sam = newState.client.samMap.get(newState.guild.id);
       sam.audioPlayer.stop();
-      sam.connection.destroy();
+      try {
+        sam.connection.destroy();
+      } catch(err) {
+        logger.error(err);
+      }
+      
       newState.client.samMap.delete(sam.guildId);
       return true;
     }

@@ -4,7 +4,12 @@ const {
   createAudioPlayer,
   joinVoiceChannel,
 } = require("@discordjs/voice");
-const { playStream } = require(path.join(__dirname, "..", "utils", "playUtils"));
+const { playStream } = require(path.join(
+  __dirname,
+  "..",
+  "utils",
+  "playUtils"
+));
 const { logger } = require(path.join(__dirname, "logger"));
 
 function ServerAudioManager(guildId, guildName) {
@@ -23,7 +28,10 @@ function ServerAudioManager(guildId, guildName) {
     }
   };
   this.joinChannel = async () => {
-    if (!this.connection || this.connection.channelId !== this.voiceChannel.id) {
+    if (
+      !this.connection ||
+      this.connection.channelId !== this.voiceChannel.id
+    ) {
       try {
         this.connection = await joinVoiceChannel({
           channelId: this.voiceChannel.id,
@@ -49,9 +57,12 @@ function createAudioPlayerWithListeners(sam) {
     } else {
       timeout = setTimeout(() => {
         logger.info(`Destroying voice connection for [${sam.guildName}]`);
-        sam.connection.destroy();
+        try {
+          sam.connection.destroy();
+        } catch (err) {
+          logger.error(err);
+        }
         sam.currentMessage.client.samMap.delete(sam.guildId);
-
       }, 60000);
     }
   });

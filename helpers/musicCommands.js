@@ -26,7 +26,12 @@ const handleKill = async (message) => {
     }
     if (sam.audioPlayer._state.status === AudioPlayerStatus.Playing) {
       sam.audioPlayer.stop();
-      await sam.connection.destroy();
+      try {
+        await sam.connection.destroy();
+      } catch(err) {
+        logger.error(error);
+      }
+      
     }
     await message.client.destroy();
     process.exit();
@@ -49,7 +54,12 @@ const handleStop = async (message) => {
     `Stopping playback in channel: [${sam.voiceChannel.name}] of server: [${message.guild.name}]...`
   );
   sam.audioPlayer.stop();
-  sam.connection.destroy();
+  try {
+    sam.connection.destroy();
+  } catch (err) {
+    logger.error(err);
+  }
+  
   sam.currentMessage.client.samMap.delete(sam.guildId);
 };
 
