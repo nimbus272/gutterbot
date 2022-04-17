@@ -20,16 +20,15 @@ module.exports = {
 
     let timeout = setTimeout(() => {
       let textChannel = newState.guild.channels.cache.find(
-        (channel) => channel.name === "general"
+        (channel) => channel.name === "shit-posting"
       );
       textChannel.send(`<@${memberId}> Alone in a discord server?`);
-      //<:PATHETIC:778014063023357953>
-      textChannel.send(`<:colby2:888677949367259206>`);
+      textChannel.send(`<:PATHETIC:778014063023357953>`);
       newState.client.stateMap.delete(memberId);
     }, 10000);
     newState.client.stateMap.set(memberId, {
       timeout: timeout,
       guildId: voiceChannel.guildId,
     });
-  }
+  },
 };

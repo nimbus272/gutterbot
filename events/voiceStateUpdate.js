@@ -1,6 +1,11 @@
 const path = require("path");
 const { setTimeoutForPathetic } = require("../utils/voiceUtils");
-const { samLeaveWhenAlone } = require(path.join(__dirname, "..", "utils", "voiceUtils"));
+const { samLeaveWhenAlone } = require(path.join(
+  __dirname,
+  "..",
+  "utils",
+  "voiceUtils"
+));
 const { logger } = require(path.join(__dirname, "..", "models", "logger.js"));
 
 module.exports = {
@@ -8,8 +13,8 @@ module.exports = {
   execute(oldState, newState) {
     let handled;
     if (
-      newState.guild.id === "812849394771820604" ||
-      oldState.guild.id === "812849394771820604"
+      newState.guild.id === "747327258854948935" ||
+      oldState.guild.id === "747327258854948935"
     ) {
       let voiceChannel = oldState.channelId
         ? newState.guild.channels.cache.get(oldState.channelId)
@@ -42,7 +47,7 @@ module.exports = {
       if (newState.channelId) {
         let channelMembers = newState.channel.members;
         if (channelMembers.size > 1) {
-          channelMembers.forEach((value, key) => {
+          channelMembers.forEach((_value, key) => {
             if (newState.client.stateMap.get(key)) {
               clearTimeout(newState.client.stateMap.get(key).timeout);
               newState.client.stateMap.delete(key);
@@ -86,93 +91,6 @@ module.exports = {
           }
         }
       }
-
     }
-
-    // if (
-    //   channelMembers.has("961706313375703050") ||
-    //   channelMembers.has("963619581346344991")
-    // ) {
-    //   let sam = newState.channel.client.samMap.get(newState.guild.id);
-    //   sam.audioPlayer.stop();
-    //   sam.connection.destroy();
-    //   sam.currentMessage.client.samMap.delete(sam.guildId);
-    //   return;
-    // }
-
-    //   if (newState.guild.id !== "812849394771820604") {
-    //     return;
-    //   }
-
-    //   let channelMembers;
-    //   let oldMembers;
-    //   let newMembers;
-    //   if (oldState.channelId && newState.channelId) {
-    //     oldMembers = newState.guild.channels.cache.get(oldState.channelId).members;
-    //     newMembers = newState.guild.channels.cache.get(newState.channelId).members
-    //     channelMembers = new Map([
-    //       ...oldMembers,
-    //       ...newMembers,
-    //     ]);
-    //   } else if (!oldState.channelId) {
-    //     channelMembers = newState.guild.channels.cache.get(
-    //       newState.channelId
-    //     ).members;
-    //   } else {
-    //     channelMembers = newState.guild.channels.cache.get(
-    //       oldState.channelId
-    //     ).members;
-    //   }
-    //   if (channelMembers.size === 0) {
-    //     if (oldState.timeout) {
-    //       clearTimeout(oldState.timeout);
-    //     }
-    //     return;
-    //   }
-
-    //   if (oldMembers && newMembers) {
-    //     if (oldMembers.size < 2 && newMembers.size < 2) {
-    //       newState.timeout = setTimeout(() => {
-    //         let textChannel = newState.guild.channels.cache.find(
-    //           (channel) => channel.name === "general"
-    //         );
-    //         channelMembers.forEach((value, key) => {
-    //           textChannel.send(`<@${key}> Alone in a discord server?`);
-    //           //<:PATHETIC:778014063023357953>
-    //           textChannel.send(`<:colby2:888677949367259206>`);
-    //         });
-    //       }, 10000);
-    //     }
-    //     return;
-    //   }
-
-    //   if (channelMembers.size !== 1) {
-    //     if (oldState.timeout) {
-    //       clearTimeout(oldState.timeout);
-    //     }
-    //     return;
-    //   }
-
-    //   if (
-    //     channelMembers.has("961706313375703050") ||
-    //     channelMembers.has("963619581346344991")
-    //   ) {
-    //     let sam = newState.channel.client.samMap.get(newState.guild.id);
-    //     sam.audioPlayer.stop();
-    //     sam.connection.destroy();
-    //     sam.currentMessage.client.samMap.delete(sam.guildId);
-    //     return;
-    //   }
-
-    //   newState.timeout = setTimeout(() => {
-    //     let textChannel = newState.guild.channels.cache.find(
-    //       (channel) => channel.name === "general"
-    //     );
-    //     textChannel.send(
-    //       `<@${channelMembers.keys().next().value}> Alone in a discord server?`
-    //     );
-    //     //<:PATHETIC:778014063023357953>
-    //     textChannel.send(`<:colby2:888677949367259206>`);
-    //   }, 30000);
   },
 };
