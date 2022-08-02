@@ -10,7 +10,8 @@ const {
   handleAt,
   handleHelp,
   handleActivate,
-  handleNoCommand
+  handleNoCommand,
+  handleExpose,
 } = require(`${__dirname}/../helpers/funCommands.js`);
 
 module.exports = {
@@ -19,10 +20,8 @@ module.exports = {
     if (message.author.bot) {
       return;
     }
-    if (
-      message.content.includes("<@")
-    ) {
-      if (message.author.id === "429481922729738280"){
+    if (message.content.includes("<@")) {
+      if (message.author.id === "429481922729738280") {
         return;
       }
       await handleAt(message);
@@ -56,8 +55,12 @@ module.exports = {
       message.content.toLowerCase().startsWith(`${process.env.PREFIX}kill`)
     ) {
       await handleKill(message);
+    } else if (
+      message.content.toLowerCase().startsWith(`${process.env.PREFIX}expose`)
+    ) {
+      handleExpose(message);
     } else {
-      handleNoCommand(message)
+      handleNoCommand(message);
     }
   },
 };

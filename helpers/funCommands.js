@@ -21,8 +21,7 @@ async function handleActivate(message) {
     ) {
       const hotJosh = await message.client.channels.fetch("747327258854948938");
       hotJosh.send(`<@429481922729738280>`);
-    }
-    else {
+    } else {
       message.reply("you don't have the right");
     }
   }
@@ -95,4 +94,18 @@ const handleNoCommand = (message) => {
   }
 };
 
-module.exports = { handleAt, handleHelp, handleActivate, handleNoCommand };
+const handleExpose = (message) => {
+  return message.reply(
+    `This fuckin idiot ${message.author} said: "${message.client.editMap.get(
+      message.guild.id
+    )}"`
+  );
+};
+
+module.exports = {
+  handleAt,
+  handleHelp,
+  handleActivate,
+  handleNoCommand,
+  handleExpose,
+};
