@@ -5,6 +5,11 @@ module.exports = {
       return;
     }
 
-    newMessage.client.editMap.set(newMessage.guild.id, oldMessage);
+    let edit = {
+      author: newMessage.author,
+      message: oldMessage,
+    };
+
+    newMessage.client.editMap.set(newMessage.guild.id, edit);
   },
 };

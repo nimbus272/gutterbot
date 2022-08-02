@@ -96,9 +96,9 @@ const handleNoCommand = (message) => {
 
 const handleExpose = (message) => {
   return message.reply(
-    `This fuckin idiot ${message.author} said: "${message.client.editMap.get(
-      message.guild.id
-    )}"`
+    `This fuckin idiot ${
+      message.client.editMap.get(message.guild.id).author
+    } said: "${message.client.editMap.get(message.guild.id).message}"`
   );
 };
 
