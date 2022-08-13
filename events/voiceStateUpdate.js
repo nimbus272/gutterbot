@@ -8,9 +8,28 @@ const { samLeaveWhenAlone } = require(path.join(
 ));
 const { logger } = require(path.join(__dirname, "..", "models", "logger.js"));
 
+function compareMaps(oldMembers, newMembers) {
+  if (oldMembers.size !== newMembers.size) {
+    return false;
+  }
+  let testVal;
+  for (let [key, val] of oldMembers) {
+    if (!newMembers.has(key)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 module.exports = {
   name: "voiceStateUpdate",
   execute(oldState, newState) {
+    if (oldState.channel && newState.channel) {
+      if (compareMaps(oldState.channel.members, newState.channel.members)) {
+        return;
+      }
+    }
+
     let handled;
     if (
       newState.guild.id === "747327258854948935" ||

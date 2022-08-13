@@ -11,10 +11,10 @@ module.exports = {
       sam.audioPlayer.stop();
       try {
         sam.connection.destroy();
-      } catch(err) {
+      } catch (err) {
         logger.error(err);
       }
-      
+
       newState.client.samMap.delete(sam.guildId);
       return true;
     }
@@ -30,6 +30,7 @@ module.exports = {
       textChannel.send(`<@${memberId}> Alone in a discord server?`);
       textChannel.send(`<:PATHETIC:778014063023357953>`);
       newState.client.stateMap.delete(memberId);
+      //45000
     }, 45000);
     newState.client.stateMap.set(memberId, {
       timeout: timeout,
