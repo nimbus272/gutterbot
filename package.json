@@ -17,7 +17,7 @@
     "axios": "^0.26.1",
     "discord-ytdl-core": "^5.0.4",
     "discord.js": "^13.6.0",
-    "dotenv": "^16.0.0",
+    "dotenv": "^16.0.1",
     "ffmpeg": "^0.0.4",
     "ffmpeg-static": "^4.4.1",
     "fluent-ffmpeg": "^2.1.2",
