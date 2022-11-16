@@ -103,7 +103,4 @@ typings/
 
 # TernJS port file
 .tern-port
-# Dockerfile
-Dockerfile
 
-./dist/
