@@ -38,6 +38,24 @@ function ServerAudioManager(guildId, guildName) {
           guildId: this.voiceChannel.guild.id,
           adapterCreator: this.voiceChannel.guild.voiceAdapterCreator,
         });
+        //Workaround suggested by Github users ramsydx and vittee in
+        //the following thread: https://github.com/discordjs/discord.js/issues/9185
+        this.connection.on("stateChange", (oldState, newState) => {
+          const oldNetworking = Reflect.get(oldState, "networking");
+          const newNetworking = Reflect.get(newState, "networking");
+
+          const networkStateChangeHandler = (
+            oldNetworkState,
+            newNetworkState
+          ) => {
+            const newUdp = Reflect.get(newNetworkState, "udp");
+            clearInterval(newUdp?.keepAliveInterval);
+          };
+
+          oldNetworking?.off("stateChange", networkStateChangeHandler);
+          newNetworking?.on("stateChange", networkStateChangeHandler);
+        });
+        //Workaround end
       } catch (joinChannelErr) {
         logger.error(joinChannelErr);
       }
