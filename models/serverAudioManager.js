@@ -40,6 +40,7 @@ function ServerAudioManager(guildId, guildName) {
         });
         //Workaround suggested by Github users ramsydx and vittee in
         //the following thread: https://github.com/discordjs/discord.js/issues/9185
+
         this.connection.on("stateChange", (oldState, newState) => {
           const oldNetworking = Reflect.get(oldState, "networking");
           const newNetworking = Reflect.get(newState, "networking");
