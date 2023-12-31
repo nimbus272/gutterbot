@@ -16,8 +16,8 @@ const handleKill = async (message) => {
   const sam = message.client.samMap.get(message.guild.id);
 
   if (
-    message.author.username === "nimbus272" ||
-    message.author.username === "swill"
+    message.author.id === "133810029743570944" ||
+    message.author.id === "334150403015049216"
   ) {
     await message.reply(`:b:EACE`);
     if (!sam) {
